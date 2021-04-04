@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Paint App </title>
     <link rel="stylesheet" href="static/css/main.css">
-    <script id="shaderVs" type="x-shader/x-vertex">
+    <!-- <script id="shaderVs" type="x-shader/x-vertex">
         attribute vec4 vPosition;
         attribute vec4 vColor;
         varying vec4 fColor;
@@ -20,11 +20,53 @@
         void main() {
             gl_FragColor = fColor;
         }
-    </script>
-    <script type="module" src="static/js/script.js"></script>
+    </script> -->
     <title></title>
 </head>
 <body>
+    <main> 
+        <h1 class="title"> Paint App </h1>
 
+        <!-- Export import util -->
+        <a id="download-link" style="display:none"></a>
+        <input style="display: none;" type="file" id="upload-btn" value="Select Files">
+
+        <div class="navbar">
+            <button id="export-btn" class="menu-item"> Export </button>
+            <button id="import-btn" class="menu-item" value="asd"> Import </button>
+            <div class="menu-item">
+                <input type="radio" name="action" value="line">Line 
+                <input type="radio" name="action" value="square">Square  
+                <input type="radio" name="action" value="polygon">Polygon  
+                <input type="checkbox" name="polygon" id="start-poly">Start Poly
+            </div>
+        </div>
+        <div class="navbar">
+            <div class="menu-item-cl">
+                <input id="color-input" type="color" value="#000000">
+            </div>
+            <div class="menu-item">
+                <p style="margin-right: 20px;">Change:</p>
+                <input type="radio" name="action" value="change-line">Line 
+                <input type="radio" name="action" value="change-square">Square  
+                <input type="radio" name="action" value="change-polygon">Polygon  
+            </div>
+        </div>
+        <div style="height: 800; width: 800; margin-bottom: 40px;">
+            <canvas id="glCanvas" width="800" height="800"></canvas>
+        </div>
+
+        <div class="help">
+            <h2> Help </h2>
+            
+        </div>
+
+        <textarea class="" rows="40" cols="80" readonly >
+            Tulis disini nanti help nya
+        </textarea>
+
+        <div style="height: 200px; max-height: 10%;"></div>
+    </main>
+    <script type="module" src="static/js/index.js"></script>
 </body>
 </html>

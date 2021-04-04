@@ -1,8 +1,8 @@
-export class Application {
-  constructor(gl, canvas){
+export default class Application {
+  constructor(canvas, gl){
     this.gl = gl;
     this.canvas = canvas;
-    this.models = []
+    this.models = [];
   }
 
   addModel(model){

@@ -1,6 +1,6 @@
 export default class Model {
 
-  constructor(gl, canvas){
+  constructor(canvas, gl){
     this.gl = gl;
     this.canvas = canvas;
     this.program = null;
