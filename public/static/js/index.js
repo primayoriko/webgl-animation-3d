@@ -1,12 +1,9 @@
-import Application from "./app";
+import Application from "./classes/app";
 
-import Horse from "./model/horse";
-
-var canvas;
-var gl;
+import Horse from "./classes/models/horse";
 
 function main(){
-  init();
+  const { canvas, gl } = init();
 
   const app = new Application(canvas, gl);
 
@@ -22,8 +19,8 @@ function main(){
 }
 
 function init(){
-  canvas = document.getElementById('glCanvas');
-  gl = canvas.getContext('webgl');
+  const canvas = document.getElementById('glCanvas');
+  const gl = canvas.getContext('webgl');
 
   // gl.viewport(0, 0, canvas.width, canvas.height);
   // gl.clearColor(1.0, 1.0, 1.0, 1.0);
@@ -37,11 +34,12 @@ function init(){
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+  return { canvas, gl };
 }
 
 function loadEvents(){
 
 }
 
-
-main();
+window.onload = main;
