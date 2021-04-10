@@ -7,6 +7,8 @@ export default class Model {
     this.modelViewMatrix = [];
     this.stack = [];
     this.components = [];
+    this.colors = [];
+    this.modelViewMatrixLoc = [];
   }
 
   init(){ /* TODO: Implement as your model */ }

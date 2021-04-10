@@ -56,4 +56,131 @@ export default class Horse extends Model {
   render(){
 
   }
+
+  torso() {
+
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * torsoHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(torsoWidth, torsoHeight, torsoWidth));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  head() {
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * headHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(headWidth, headHeight, headWidth));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  neck() {
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * neckHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(neckWidth, neckHeight, neckWidth));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  leftUpperArm() {
+  
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperArmHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(upperArmWidth, upperArmHeight, upperArmWidth));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  leftLowerArm() {
+  
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerArmHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(lowerArmWidth, lowerArmHeight, lowerArmWidth));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  rightUpperArm() {
+  
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperArmHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(upperArmWidth, upperArmHeight, upperArmWidth));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  rightLowerArm() {
+  
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerArmHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(lowerArmWidth, lowerArmHeight, lowerArmWidth));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  leftUpperLeg() {
+  
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperLegHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(upperLegWidth, upperLegHeight, upperLegWidth));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  leftLowerLeg() {
+  
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerLegHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(lowerLegWidth, lowerLegHeight, lowerLegWidth));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  rightUpperLeg() {
+  
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperLegHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(upperLegWidth, upperLegHeight, upperLegWidth));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  rightLowerLeg() {
+  
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerLegHeight, 0.0));
+    instanceMatrix = mult(instanceMatrix, scale4(lowerLegWidth, lowerLegHeight, lowerLegWidth))
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+  
+  quad(a, b, c, d) {
+    pointsArray.push(vertices[a]);
+    pointsArray.push(vertices[b]);
+    pointsArray.push(vertices[c]);
+    pointsArray.push(vertices[d]);
+  }
+  
+  
+  cube() {
+    quad(1, 0, 3, 2);
+    colors.push(vertexColors[3]);
+    colors.push(vertexColors[3]);
+    colors.push(vertexColors[0]);
+    colors.push(vertexColors[0]);
+    quad(2, 3, 7, 6);
+    colors.push(vertexColors[3]);
+    colors.push(vertexColors[3]);
+    colors.push(vertexColors[0]);
+    colors.push(vertexColors[0]);
+    quad(3, 0, 4, 7);
+    colors.push(vertexColors[0]);
+    colors.push(vertexColors[0]);
+    colors.push(vertexColors[3]);
+    colors.push(vertexColors[3]);
+    quad(6, 5, 1, 2);
+    colors.push(vertexColors[2]);
+    colors.push(vertexColors[2]);
+    colors.push(vertexColors[2]);
+    colors.push(vertexColors[2]);
+    quad(4, 5, 6, 7);
+    colors.push(vertexColors[1]);
+    colors.push(vertexColors[1]);
+    colors.push(vertexColors[1]);
+    colors.push(vertexColors[1]);
+    quad(5, 4, 0, 1);
+    colors.push(vertexColors[3]);
+    colors.push(vertexColors[3]);
+    colors.push(vertexColors[0]);
+    colors.push(vertexColors[3]);
+  }
 }
