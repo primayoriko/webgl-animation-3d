@@ -1,22 +1,21 @@
+import m4 from "../../utils/m4-utils";
 export default class Model {
 
   constructor(canvas, gl){
     this.gl = gl;
     this.canvas = canvas;
     this.program = null;
-    this.modelViewMatrix = [];
+    this.modelViewMatrix = m4.new();
     this.stack = [];
     this.components = [];
     this.colors = [];
-    this.modelViewMatrixLoc = [];
     this.program = null;
+    this.modelViewMatrixLoc = null;
   }
 
   init(){ /* TODO: Implement as your model */ }
 
   render(){ /* TODO: Implement as your model */ }
-
-  createProgram(){ /* TODO: Implement as your model */ }
 
   static createNode(transform, render, sibling, child){
     return {

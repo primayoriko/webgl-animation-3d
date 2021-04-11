@@ -1,10 +1,14 @@
 import Model from "./model";
 
+import { createProgram } from "../../utils/webgl-utils";
+
+import vertexShader from "../../shaders/vertex";
+import fragmentShader from "../../shaders/fragment";
 export default class Horse extends Model {
   constructor(canvas, gl){
     super(canvas, gl);
 
-    this.program = this.createProgram();
+    this.program = createProgram(this.gl, vertexShader, fragmentShader);
 
     this.TORSO_ID = 0;
     this.NECK_ID = 1;
@@ -56,10 +60,6 @@ export default class Horse extends Model {
   }
 
   render(){
-
-  }
-
-  createProgram() {
 
   }
 
