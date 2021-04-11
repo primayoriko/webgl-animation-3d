@@ -9,11 +9,14 @@ export default class Model {
     this.components = [];
     this.colors = [];
     this.modelViewMatrixLoc = [];
+    this.program = null;
   }
 
   init(){ /* TODO: Implement as your model */ }
 
   render(){ /* TODO: Implement as your model */ }
+
+  createProgram(){ /* TODO: Implement as your model */ }
 
   static createNode(transform, render, sibling, child){
     return {

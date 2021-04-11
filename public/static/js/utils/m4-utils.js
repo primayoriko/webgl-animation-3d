@@ -1,6 +1,16 @@
 module.exports = {
-  id = (i, j) => {
+  id: (i, j) => {
     return i * 4 + j;
+  },
+  new: () => {
+    const newMat = [];
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+        if(i == j) newMat.push(1);
+        else newMat.push(0);
+      }
+    }
+    return newMat;
   },
   copy: (mat) => {
     const newMat = [];
@@ -12,10 +22,10 @@ module.exports = {
     return newMat;
   },
   transpose: (mat) => {
-    const ret = this.copy(mat);
+    const ret = this.new();
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
-        ret[id(i, j)] = ret[id(j, i)];
+        ret[this.id(i, j)] = mat[this.id(j, i)];
       }
     }
     return ret;
@@ -25,9 +35,9 @@ module.exports = {
     const [tA, tB] = [m4.transpose(a), m4.transpose(b)];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
-        c[id(i, j)] = 0;
+        c[this.id(i, j)] = 0;
         for (let k = 0; k < 4; k++) {
-          c[id(i, j)] += tA[id(i, k)] * tB[id(k, j)];
+          c[this.id(i, j)] += tA[this.id(i, k)] * tB[this.id(k, j)];
         }
       }
     }

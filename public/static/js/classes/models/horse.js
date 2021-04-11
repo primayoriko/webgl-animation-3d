@@ -4,6 +4,8 @@ export default class Horse extends Model {
   constructor(canvas, gl){
     super(canvas, gl);
 
+    this.program = this.createProgram();
+
     this.TORSO_ID = 0;
     this.NECK_ID = 1;
     this.HEAD_ID = 2;
@@ -54,6 +56,10 @@ export default class Horse extends Model {
   }
 
   render(){
+
+  }
+
+  createProgram() {
 
   }
 
