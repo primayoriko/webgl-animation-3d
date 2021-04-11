@@ -16,6 +16,8 @@ function main(){
   // TODO: Tambah model lain ke app
 
   loadEvents();
+
+  app.render();
 }
 
 function init(){
@@ -39,6 +41,7 @@ function init(){
 }
 
 function loadEvents(){
+  // TODO: Add interaksi dari UI gmn gitu
 
 }
 

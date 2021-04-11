@@ -9,7 +9,6 @@ export default class Model {
 
     this.stack = [];
     this.components = [];
-    this.colors = [];
 
     this.modelViewMatrix = {
       scope: "uniform",
@@ -30,7 +29,7 @@ export default class Model {
       buffer: gl.createBuffer(),
       location: gl.getAttribLocation(program, "vPosition"),
       value: [],
-      size: 3,
+      size: 4,
     };
 
     this.vColor = {
@@ -52,6 +51,8 @@ export default class Model {
   init(){ /* TODO: Implement as your model */ }
 
   render(){ /* TODO: Implement as your model */ }
+
+  changeState(){ /* TODO: Implement as your model and as a time-variate function */ }
 
   static createNode(transform, render, sibling, child){
     return {

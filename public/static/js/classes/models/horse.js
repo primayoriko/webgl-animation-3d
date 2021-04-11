@@ -2,6 +2,8 @@ import Model from "./model";
 
 import m4 from "../../utils/m4-utils";
 
+import angle from "../../utils/angle-utils";
+
 import { createProgram } from "../../utils/webgl-utils";
 
 import vertexShader from "../../shaders/vertex";
@@ -58,146 +60,169 @@ export default class Horse extends Model {
 
     this.numVertices = 24;
 
+    this.verticesSet = [
+      -0.5, -0.5, 0.5, 1.0,
+      -0.5, 0.5, 0.5, 1.0,
+      0.5, 0.5, 0.5, 1.0,
+      0.5, -0.5, 0.5, 1.0,
+      -0.5, -0.5, -0.5, 1.0,
+      -0.5, 0.5, -0.5, 1.0,
+      0.5, 0.5, -0.5, 1.0,
+      0.5, -0.5, -0.5, 1.0
+    ];
+    
+    this.colorsSet = [
+      0.6, 0.32, 0.17, 1.0, // Brown
+      0.7, 0.3, 0.0, 1.0, // Brown dark
+      0.5, 0.3, 0.1, 1.0, // Brown light
+      0.5, 0.25, 0.14, 1.0 // Brown more lighten
+    ];
+
     this.init();
   }
 
   init(){
+    this.initShape;
+    this.updateAll();
 
+    this.initTorso();
   }
 
   render(){
-
+    this.updateAll();
+    this.traverse(this.TORSO_ID);
   }
 
   initTorso(){
     let m = m4.new();
-    this.components[this.TORSO_ID] = Model.createNode(m, this.renderTorso, null, this.NECK_ID);
+    this.components[this.TORSO_ID] = Model.createNode(m, this.renderTorso, null, null);//this.NECK_ID);
   }
 
   renderTorso() {
+    // this.updateAll();
 
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * torsoHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(torsoWidth, torsoHeight, torsoWidth));
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
+    instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
+    this.updateUniform(this.modelViewMatrix);
+    // gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
   }
   
-  head() {
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * headHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(headWidth, headHeight, headWidth));
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // head() {
+  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * headHeight, 0.0));
+  //   instanceMatrix = mult(instanceMatrix, scale4(headWidth, headHeight, headWidth));
+  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // }
+  
+  // neck() {
+  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * neckHeight, 0.0));
+  //   instanceMatrix = mult(instanceMatrix, scale4(neckWidth, neckHeight, neckWidth));
+  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // }
+  
+  // leftUpperArm() {
+  
+  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperArmHeight, 0.0));
+  //   instanceMatrix = mult(instanceMatrix, scale4(upperArmWidth, upperArmHeight, upperArmWidth));
+  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // }
+  
+  // leftLowerArm() {
+  
+  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerArmHeight, 0.0));
+  //   instanceMatrix = mult(instanceMatrix, scale4(lowerArmWidth, lowerArmHeight, lowerArmWidth));
+  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // }
+  
+  // rightUpperArm() {
+  
+  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperArmHeight, 0.0));
+  //   instanceMatrix = mult(instanceMatrix, scale4(upperArmWidth, upperArmHeight, upperArmWidth));
+  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // }
+  
+  // rightLowerArm() {
+  
+  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerArmHeight, 0.0));
+  //   instanceMatrix = mult(instanceMatrix, scale4(lowerArmWidth, lowerArmHeight, lowerArmWidth));
+  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // }
+  
+  // leftUpperLeg() {
+  
+  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperLegHeight, 0.0));
+  //   instanceMatrix = mult(instanceMatrix, scale4(upperLegWidth, upperLegHeight, upperLegWidth));
+  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // }
+  
+  // leftLowerLeg() {
+  
+  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerLegHeight, 0.0));
+  //   instanceMatrix = mult(instanceMatrix, scale4(lowerLegWidth, lowerLegHeight, lowerLegWidth));
+  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // }
+  
+  // rightUpperLeg() {
+  
+  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperLegHeight, 0.0));
+  //   instanceMatrix = mult(instanceMatrix, scale4(upperLegWidth, upperLegHeight, upperLegWidth));
+  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // }
+  
+  // rightLowerLeg() {
+  
+  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerLegHeight, 0.0));
+  //   instanceMatrix = mult(instanceMatrix, scale4(lowerLegWidth, lowerLegHeight, lowerLegWidth))
+  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  // }
+  
+  makeQuad(a, b, c, d) {
+    pointsArray.push(...this.verticesSet.slice(a, a+4));
+    pointsArray.push(...this.verticesSet.slice(b, b+4));
+    pointsArray.push(...this.verticesSet.slice(c, c+4));
+    pointsArray.push(...this.verticesSet.slice(d, d+4));
   }
   
-  neck() {
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * neckHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(neckWidth, neckHeight, neckWidth));
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  }
-  
-  leftUpperArm() {
-  
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperArmHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(upperArmWidth, upperArmHeight, upperArmWidth));
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  }
-  
-  leftLowerArm() {
-  
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerArmHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(lowerArmWidth, lowerArmHeight, lowerArmWidth));
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  }
-  
-  rightUpperArm() {
-  
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperArmHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(upperArmWidth, upperArmHeight, upperArmWidth));
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  }
-  
-  rightLowerArm() {
-  
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerArmHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(lowerArmWidth, lowerArmHeight, lowerArmWidth));
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  }
-  
-  leftUpperLeg() {
-  
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperLegHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(upperLegWidth, upperLegHeight, upperLegWidth));
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  }
-  
-  leftLowerLeg() {
-  
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerLegHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(lowerLegWidth, lowerLegHeight, lowerLegWidth));
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  }
-  
-  rightUpperLeg() {
-  
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperLegHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(upperLegWidth, upperLegHeight, upperLegWidth));
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  }
-  
-  rightLowerLeg() {
-  
-    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerLegHeight, 0.0));
-    instanceMatrix = mult(instanceMatrix, scale4(lowerLegWidth, lowerLegHeight, lowerLegWidth))
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  }
-  
-  quad(a, b, c, d) {
-    pointsArray.push(vertices[a]);
-    pointsArray.push(vertices[b]);
-    pointsArray.push(vertices[c]);
-    pointsArray.push(vertices[d]);
-  }
-  
-  
-  cube() {
-    quad(1, 0, 3, 2);
-    colors.push(vertexColors[3]);
-    colors.push(vertexColors[3]);
-    colors.push(vertexColors[0]);
-    colors.push(vertexColors[0]);
-    quad(2, 3, 7, 6);
-    colors.push(vertexColors[3]);
-    colors.push(vertexColors[3]);
-    colors.push(vertexColors[0]);
-    colors.push(vertexColors[0]);
-    quad(3, 0, 4, 7);
-    colors.push(vertexColors[0]);
-    colors.push(vertexColors[0]);
-    colors.push(vertexColors[3]);
-    colors.push(vertexColors[3]);
-    quad(6, 5, 1, 2);
-    colors.push(vertexColors[2]);
-    colors.push(vertexColors[2]);
-    colors.push(vertexColors[2]);
-    colors.push(vertexColors[2]);
-    quad(4, 5, 6, 7);
-    colors.push(vertexColors[1]);
-    colors.push(vertexColors[1]);
-    colors.push(vertexColors[1]);
-    colors.push(vertexColors[1]);
-    quad(5, 4, 0, 1);
-    colors.push(vertexColors[3]);
-    colors.push(vertexColors[3]);
-    colors.push(vertexColors[0]);
-    colors.push(vertexColors[3]);
+  initShape() {
+    this.makeQuad(1, 0, 3, 2);
+    this.vColor.value.push(...this.colorsSet.slice(12, 16));
+    this.vColor.value.push(...this.colorsSet.slice(12, 16));
+    this.vColor.value.push(...this.colorsSet.slice(0, 4));
+    this.vColor.value.push(...this.colorsSet.slice(0, 4));
+    this.makeQuad(2, 3, 7, 6);
+    this.vColor.value.push(...this.colorsSet.slice(12, 16));
+    this.vColor.value.push(...this.colorsSet.slice(12, 16));
+    this.vColor.value.push(...this.colorsSet.slice(0, 4));
+    this.vColor.value.push(...this.colorsSet.slice(0, 4));
+    this.makeQuad(3, 0, 4, 7);
+    this.vColor.value.push(...this.colorsSet.slice(0, 4));
+    this.vColor.value.push(...this.colorsSet.slice(0, 4));
+    this.vColor.value.push(...this.colorsSet.slice(12, 16));
+    this.vColor.value.push(...this.colorsSet.slice(12, 16));
+    this.makeQuad(6, 5, 1, 2);
+    this.vColor.value.push(...this.colorsSet.slice(8, 12));
+    this.vColor.value.push(...this.colorsSet.slice(8, 12));
+    this.vColor.value.push(...this.colorsSet.slice(8, 12));
+    this.vColor.value.push(...this.colorsSet.slice(8, 12));
+    this.makeQuad(4, 5, 6, 7);
+    this.vColor.value.push(...this.colorsSet.slice(4, 8));
+    this.vColor.value.push(...this.colorsSet.slice(4, 8));
+    this.vColor.value.push(...this.colorsSet.slice(4, 8));
+    this.vColor.value.push(...this.colorsSet.slice(4, 8));
+    this.makeQuad(5, 4, 0, 1);
+    this.vColor.value.push(...this.colorsSet.slice(12, 16));
+    this.vColor.value.push(...this.colorsSet.slice(12, 16));
+    this.vColor.value.push(...this.colorsSet.slice(0, 4));
+    this.vColor.value.push(...this.colorsSet.slice(12, 16));
   }
 }
