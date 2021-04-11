@@ -1,17 +1,18 @@
 const vertex = `
-attribute  vec4 vPosition;
-attribute  vec2 vTextCord;
-attribute  vec4 vColor;
-
-varying vec4 fColor;
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
-//varying vec2 fTextCord;
+
+attribute vec4 vPosition;
+attribute vec4 vColor;
+
+attribute vec2 vTextCord;
+
+varying vec4 fColor;
+
 void main()
 {
   gl_Position = projectionMatrix * modelViewMatrix * vPosition;
   fColor = vColor;
-  //  fTextCord = vTextCord;
 }
 `;
 

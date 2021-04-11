@@ -1,9 +1,13 @@
 import Model from "./model";
 
+import m4 from "../../utils/m4-utils";
+
 import { createProgram } from "../../utils/webgl-utils";
 
 import vertexShader from "../../shaders/vertex";
+
 import fragmentShader from "../../shaders/fragment";
+
 export default class Horse extends Model {
   constructor(canvas, gl){
     super(canvas, gl);
@@ -53,6 +57,8 @@ export default class Horse extends Model {
     this.knownLastIndex = 1;
 
     this.numVertices = 24;
+
+    this.init();
   }
 
   init(){
@@ -63,7 +69,12 @@ export default class Horse extends Model {
 
   }
 
-  torso() {
+  initTorso(){
+    let m = m4.new();
+    this.components[this.TORSO_ID] = Model.createNode(m, this.renderTorso, null, this.NECK_ID);
+  }
+
+  renderTorso() {
 
     instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * torsoHeight, 0.0));
     instanceMatrix = mult(instanceMatrix, scale4(torsoWidth, torsoHeight, torsoWidth));
