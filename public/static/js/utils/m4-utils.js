@@ -1,4 +1,4 @@
-module.exports = {
+const m4 = {
   id: (i, j) => {
     return i * 4 + j;
   },
@@ -215,3 +215,5 @@ module.exports = {
     return m4.multiply(m, m4.scaling(sx, sy, sz));
   },
 }
+
+export default m4;

@@ -1,4 +1,4 @@
-import m4 from "../../utils/m4-utils";
+import m4 from "../../utils/m4-utils.js";
 
 export default class Model {
 

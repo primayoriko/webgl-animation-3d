@@ -1,6 +1,6 @@
-import Application from "./classes/app";
+import Application from "./classes/app.js";
 
-import Horse from "./classes/models/horse";
+import Horse from "./classes/models/horse.js";
 
 function main(){
   const { canvas, gl } = init();
