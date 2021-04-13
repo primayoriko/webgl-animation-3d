@@ -13,6 +13,10 @@ function main(){
 
   app.addModel(horse);
 
+  console.log(app.models[0] === horse);
+
+  console.log(app.models[0].modelViewMatrix);
+
   // TODO: Tambah model lain ke app
 
   loadEvents();

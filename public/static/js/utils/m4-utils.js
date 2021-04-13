@@ -22,22 +22,22 @@ const m4 = {
     return newMat;
   },
   transpose: (mat) => {
-    const ret = this.new();
+    const ret = m4.new();
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
-        ret[this.id(i, j)] = mat[this.id(j, i)];
+        ret[m4.id(i, j)] = mat[m4.id(j, i)];
       }
     }
     return ret;
   },
   multiply: (a, b) => {
-    const c = this.copy(a);
+    const c = m4.new();
     const [tA, tB] = [m4.transpose(a), m4.transpose(b)];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
-        c[this.id(i, j)] = 0;
+        c[m4.id(i, j)] = 0;
         for (let k = 0; k < 4; k++) {
-          c[this.id(i, j)] += tA[this.id(i, k)] * tB[this.id(k, j)];
+          c[m4.id(i, j)] += tA[m4.id(i, k)] * tB[m4.id(k, j)];
         }
       }
     }

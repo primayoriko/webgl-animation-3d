@@ -16,6 +16,45 @@ export default class Horse extends Model {
 
     this.program = createProgram(this.gl, vertexShader, fragmentShader);
 
+    this.modelViewMatrix = {
+      scope: "uniform",
+      location: gl.getUniformLocation(this.program, "modelViewMatrix"),
+      value: m4.new(),
+      type: "mat4",
+    };
+
+    this.projectionMatrix = {
+      scope: "uniform",
+      location: gl.getUniformLocation(this.program, "projectionMatrix"),
+      value: m4.new(),
+      type: "mat4",
+    };
+
+    this.vPosition = {
+      scope: "attribute",
+      buffer: gl.createBuffer(),
+      location: gl.getAttribLocation(this.program, "vPosition"),
+      value: [],
+      size: 4,
+    };
+
+    this.vColor = {
+      scope: "attribute",
+      location: gl.getAttribLocation(this.program, "vColor"),
+      value: [],
+      size: 4,
+    };
+
+    // this.vNormal = {
+    //   scope: "attribute",
+    //   location: gl.getAttribLocation(this.program, "vNormal"),
+    //   value: [],
+    //   size: 3,
+    // };
+
+    console.log(this.modelViewMatrix);
+    console.log(this.projectionMatrix);
+
     this.TORSO_ID = 0;
     this.NECK_ID = 1;
     this.HEAD_ID = 2;
@@ -82,15 +121,29 @@ export default class Horse extends Model {
   }
 
   init(){
-    this.initShape;
-    this.updateAll();
+    this.initShape();
+    this.updateVars();
 
     this.initTorso();
+    // this.render();
   }
 
   render(){
-    this.updateAll();
+    this.updateVars();
     this.traverse(this.TORSO_ID);
+  }
+
+  updateVars() {
+    this.gl.useProgram(this.program);
+
+    this.updateBuffer(this.projectionMatrix);
+    this.updateBuffer(this.modelViewMatrix);
+
+    this.updateBuffer(this.vPosition);
+    this.updateBuffer(this.vColor);
+
+    // this.updateBuffer(this.vNormal);
+
   }
 
   initTorso(){
@@ -99,7 +152,10 @@ export default class Horse extends Model {
   }
 
   renderTorso() {
-    // this.updateAll();
+    // this.updateVars();
+
+    console.log(this.modelViewMatrix);
+    console.log(this.projectionMatrix);
 
     let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
     instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
@@ -187,10 +243,10 @@ export default class Horse extends Model {
   // }
   
   makeQuad(a, b, c, d) {
-    pointsArray.push(...this.verticesSet.slice(a, a+4));
-    pointsArray.push(...this.verticesSet.slice(b, b+4));
-    pointsArray.push(...this.verticesSet.slice(c, c+4));
-    pointsArray.push(...this.verticesSet.slice(d, d+4));
+    this.vPosition.value.push(...this.verticesSet.slice(a, a+4));
+    this.vPosition.value.push(...this.verticesSet.slice(b, b+4));
+    this.vPosition.value.push(...this.verticesSet.slice(c, c+4));
+    this.vPosition.value.push(...this.verticesSet.slice(d, d+4));
   }
   
   initShape() {

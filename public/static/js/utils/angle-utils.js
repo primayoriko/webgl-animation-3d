@@ -1,4 +1,4 @@
-module.exports = {
+const angle = {
   degToRad: (deg) => {
     return (deg * Math.PI) / 180;
   },
@@ -6,3 +6,5 @@ module.exports = {
     return (rad * 180) / Math.PI;
   }
 }
+
+export default angle;

@@ -10,34 +10,34 @@ export default class Model {
     this.stack = [];
     this.components = [];
 
-    this.modelViewMatrix = {
-      scope: "uniform",
-      location: gl.getUniformLocation(program, "modelViewMatrix"),
-      value: m4.new(),
-      type: "mat4",
-    };
+    // this.modelViewMatrix = {
+    //   scope: "uniform",
+    //   location: gl.getUniformLocation(program, "modelViewMatrix"),
+    //   value: m4.new(),
+    //   type: "mat4",
+    // };
 
-    this.projectionMatrix = {
-      scope: "uniform",
-      location: gl.getUniformLocation(program, "projectionMatrix"),
-      value: m4.new(),
-      type: "mat4",
-    };
+    // this.projectionMatrix = {
+    //   scope: "uniform",
+    //   location: gl.getUniformLocation(program, "projectionMatrix"),
+    //   value: m4.new(),
+    //   type: "mat4",
+    // };
 
-    this.vPosition = {
-      scope: "attribute",
-      buffer: gl.createBuffer(),
-      location: gl.getAttribLocation(program, "vPosition"),
-      value: [],
-      size: 4,
-    };
+    // this.vPosition = {
+    //   scope: "attribute",
+    //   buffer: gl.createBuffer(),
+    //   location: gl.getAttribLocation(program, "vPosition"),
+    //   value: [],
+    //   size: 4,
+    // };
 
-    this.vColor = {
-      scope: "attribute",
-      location: gl.getAttribLocation(program, "vColor"),
-      value: [],
-      size: 4,
-    };
+    // this.vColor = {
+    //   scope: "attribute",
+    //   location: gl.getAttribLocation(program, "vColor"),
+    //   value: [],
+    //   size: 4,
+    // };
 
     // this.vNormal = {
     //   scope: "attribute",
@@ -69,32 +69,21 @@ export default class Model {
     this.stack.push(this.modelViewMatrix.value);
 
     this.modelViewMatrix.value = 
-      m4.multiply(this.modelViewMatrix.value, this.components[Id].transform);
+      m4.multiply(this.modelViewMatrix.value, this.components[id].transform);
 
-    this.components[Id].render();
+    this.components[id].render();
 
-    if (this.components[Id].child != null) 
-      traverse(this.components[Id].child);
+    if (this.components[id].child != null) 
+      traverse(this.components[id].child);
 
     this.modelViewMatrix.value = this.stack.pop();
 
-    if (this.components[Id].sibling != null) 
-      traverse(this.components[Id].sibling);
+    if (this.components[id].sibling != null) 
+      traverse(this.components[id].sibling);
 
   }
 
-  updateAll() {
-    this.gl.useProgram(this.program);
-
-    this.updateBuffer(this.projectionMatrix);
-    this.updateBuffer(this.modelViewMatrix);
-
-    this.updateBuffer(this.vPosition);
-    this.updateBuffer(this.vColor);
-
-    // this.updateBuffer(this.vNormal);
-
-  }
+  updateVars() { /* TODO: Impelment as your own model */ }
 
   updateBuffer(bufferContainer){
     if(bufferContainer.scope === "uniform"){
