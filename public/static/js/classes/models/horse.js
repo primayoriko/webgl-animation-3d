@@ -125,12 +125,23 @@ export default class Horse extends Model {
     this.updateVars();
 
     this.initTorso();
+
+    console.log(this.modelViewMatrix);
+    console.log(this.projectionMatrix);
+
     // this.render();
   }
 
   render(){
     this.updateVars();
+
+    console.log(this.modelViewMatrix);
+    console.log(this.projectionMatrix);
+
     this.traverse(this.TORSO_ID);
+
+    console.log(this.modelViewMatrix);
+    console.log(this.projectionMatrix);
   }
 
   updateVars() {
@@ -148,7 +159,7 @@ export default class Horse extends Model {
 
   initTorso(){
     let m = m4.new();
-    this.components[this.TORSO_ID] = Model.createNode(m, this.renderTorso, null, null);//this.NECK_ID);
+    this.components[this.TORSO_ID] = Model.createNode(m, () => this.renderTorso(), null, null);//this.NECK_ID);
   }
 
   renderTorso() {
@@ -161,7 +172,7 @@ export default class Horse extends Model {
     instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
     this.updateUniform(this.modelViewMatrix);
     // gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+    for (let i = 0; i < 6; i++) this.gl.drawArrays(this.gl.TRIANGLE_FAN, 4 * i, 4);
   }
   
   // head() {
