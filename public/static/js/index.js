@@ -7,17 +7,9 @@ function main(){
 
   const app = new Application(canvas, gl);
 
-  const horse = new Horse(canvas, gl);
+  // TODO: Inisiasi + tambah model lain
 
-  // TODO: Inisiasi model lain
-
-  app.addModel(horse);
-
-  console.log(app.models[0] === horse);
-
-  console.log(app.models[0].modelViewMatrix);
-
-  // TODO: Tambah model lain ke app
+  app.addModel(new Horse(canvas, gl));
 
   loadEvents();
 

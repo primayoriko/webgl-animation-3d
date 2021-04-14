@@ -35,6 +35,7 @@ export default class Horse extends Model {
       buffer: gl.createBuffer(),
       location: gl.getAttribLocation(this.program, "vPosition"),
       value: [],
+      buffer: gl.createBuffer(),
       size: 4,
     };
 
@@ -42,6 +43,7 @@ export default class Horse extends Model {
       scope: "attribute",
       location: gl.getAttribLocation(this.program, "vColor"),
       value: [],
+      buffer: gl.createBuffer(),
       size: 4,
     };
 
@@ -51,9 +53,6 @@ export default class Horse extends Model {
     //   value: [],
     //   size: 3,
     // };
-
-    console.log(this.modelViewMatrix);
-    console.log(this.projectionMatrix);
 
     this.TORSO_ID = 0;
     this.NECK_ID = 1;
@@ -126,22 +125,13 @@ export default class Horse extends Model {
 
     this.initTorso();
 
-    console.log(this.modelViewMatrix);
-    console.log(this.projectionMatrix);
-
-    // this.render();
   }
 
   render(){
     this.updateVars();
 
-    console.log(this.modelViewMatrix);
-    console.log(this.projectionMatrix);
-
     this.traverse(this.TORSO_ID);
 
-    console.log(this.modelViewMatrix);
-    console.log(this.projectionMatrix);
   }
 
   updateVars() {
@@ -163,15 +153,9 @@ export default class Horse extends Model {
   }
 
   renderTorso() {
-    // this.updateVars();
-
-    console.log(this.modelViewMatrix);
-    console.log(this.projectionMatrix);
-
     let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
     instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
-    this.updateUniform(this.modelViewMatrix);
-    // gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+    this.updateVars();
     for (let i = 0; i < 6; i++) this.gl.drawArrays(this.gl.TRIANGLE_FAN, 4 * i, 4);
   }
   

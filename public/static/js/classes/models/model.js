@@ -68,12 +68,8 @@ export default class Model {
 
     this.stack.push(this.modelViewMatrix.value);
 
-    console.log(this.modelViewMatrix.value);
-
     this.modelViewMatrix.value = 
       m4.multiply(this.modelViewMatrix.value, this.components[id].transform);
-
-    console.log(this.modelViewMatrix.value);
 
     this.components[id].render();
 
