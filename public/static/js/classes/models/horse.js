@@ -100,6 +100,7 @@ export default class Horse extends Model {
 
     this.numVertices = 24;
 
+    // Vertices of a cube
     this.verticesSet = [
       -0.5, -0.5, 0.5, 1.0,
       -0.5, 0.5, 0.5, 1.0,
@@ -140,6 +141,7 @@ export default class Horse extends Model {
 
   setProjectionMatrix(matrixArr){ 
     this.projectionMatrix.value = matrixArr;
+    this.gl.useProgram(this.program);
     this.updateUniform(this.projectionMatrix);
   }
 
@@ -314,40 +316,45 @@ export default class Horse extends Model {
   //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
   // }
   
-  makeQuad(a, b, c, d) {
+  makeQuadSurface(a, b, c, d) {
+    a *= 4; b *= 4; c *= 4; d *= 4;
+    console.log(this.vPosition.value);
+
     this.vPosition.value.push(...this.verticesSet.slice(a, a+4));
     this.vPosition.value.push(...this.verticesSet.slice(b, b+4));
     this.vPosition.value.push(...this.verticesSet.slice(c, c+4));
     this.vPosition.value.push(...this.verticesSet.slice(d, d+4));
+
+    console.log(this.vPosition.value);
   }
   
   initShape() {
-    this.makeQuad(1, 0, 3, 2);
+    this.makeQuadSurface(1, 0, 3, 2);
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.makeQuad(2, 3, 7, 6);
+    this.makeQuadSurface(2, 3, 7, 6);
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.makeQuad(3, 0, 4, 7);
+    this.makeQuadSurface(3, 0, 4, 7);
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    this.makeQuad(6, 5, 1, 2);
+    this.makeQuadSurface(6, 5, 1, 2);
     this.vColor.value.push(...this.colorsSet.slice(8, 12));
     this.vColor.value.push(...this.colorsSet.slice(8, 12));
     this.vColor.value.push(...this.colorsSet.slice(8, 12));
     this.vColor.value.push(...this.colorsSet.slice(8, 12));
-    this.makeQuad(4, 5, 6, 7);
+    this.makeQuadSurface(4, 5, 6, 7);
     this.vColor.value.push(...this.colorsSet.slice(4, 8));
     this.vColor.value.push(...this.colorsSet.slice(4, 8));
     this.vColor.value.push(...this.colorsSet.slice(4, 8));
     this.vColor.value.push(...this.colorsSet.slice(4, 8));
-    this.makeQuad(5, 4, 0, 1);
+    this.makeQuadSurface(5, 4, 0, 1);
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
