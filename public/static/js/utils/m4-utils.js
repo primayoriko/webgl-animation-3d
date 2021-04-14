@@ -214,6 +214,54 @@ const m4 = {
   scale: function (m, sx, sy, sz) {
     return m4.multiply(m, m4.scaling(sx, sy, sz));
   },
+  orthographic: (
+    left,
+    right,
+    bottom,
+    top,
+    near,
+    far
+  ) => {
+    // prettier-ignore
+    return [
+      2 / (right - left), 0, 0, 0,
+      0, 2 / (top - bottom), 0, 0,
+      0, 0, 2 / (near - far), 0,
+  
+      (left + right) / (left - right), (bottom + top) / (bottom - top), (near + far) / (near - far), 1
+    ]
+  },
+  oblique: (theta, phi) => {
+    // prettier-ignore
+    return m4.transpose([
+      1, 0, 1/Math.tan(theta), 0,
+      0, 1, 1/Math.tan(phi), 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1
+    ])
+  },
+  perspective:(field, ratio, z_near, z_far)=>{
+    const k = 1 / Math.tan(field / 2);
+    const j = k/ratio;
+    const mat_res =[
+      j, 0, 0, 0,
+      0, k, 0, 0,
+      0, 0, 0, -1,
+      0, 0, 0, 0,
+    ];
+
+    if (z_far !== Infinity && z_far != null ){
+      const p = 1 / (z_near-z_far);
+      mat_res[10] = p*(z_far+z_near);
+      mat_res[14] = p*z_far*z_near*2;
+    } 
+    else{
+      mat_res[10] = -1;
+      mat_res[14] = -2 * z_near;
+    }
+
+    return mat_res;
+  }
 }
 
 export default m4;

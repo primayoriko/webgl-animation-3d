@@ -54,6 +54,8 @@ export default class Model {
 
   changeState(){ /* TODO: Implement as your model and as a time-variate function */ }
 
+  setProjectionMatrix(matrixArr){ /* TODO: Implement as your model */ }
+
   static createNode(transform, render, sibling, child){
     return {
       transform,

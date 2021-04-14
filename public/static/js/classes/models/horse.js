@@ -72,7 +72,7 @@ export default class Horse extends Model {
     this.GLOBAL_X_COORDINATE = 13;
     this.GLOBAL_Y_COORDINATE = 14;
 
-    this.thetaAngles = [90, 120, 90, 70, 10, 80, 10, 90, 40, 70, 30, 0, -90, 0, 0];
+    this.anglesSet = [90, 120, 90, 70, 10, 80, 10, 90, 40, 70, 30, 0, -90, 0, 0];
 
     this.torsoHeight = 8.0;
     this.torsoWidth = 3.0;
@@ -138,6 +138,11 @@ export default class Horse extends Model {
 
   }
 
+  setProjectionMatrix(matrixArr){ 
+    this.projectionMatrix.value = matrixArr;
+    this.updateUniform(this.projectionMatrix);
+  }
+
   updateVars() {
     this.gl.useProgram(this.program);
 
@@ -153,7 +158,8 @@ export default class Horse extends Model {
 
   initTorso(){
     let m = m4.new();
-    // m = m4.xRotate(angle.radToDeg(this.thetaAngles[this.GLOBAL_ANGLE_ID]));
+    m = m4.zRotate(m, angle.radToDeg(this.anglesSet[this.GLOBAL_ANGLE_ID]));
+    m = m4.yRotate(m, angle.radToDeg(this.anglesSet[this.TORSO_ID]));
 
     this.components[this.TORSO_ID] = 
       Model.createNode(
@@ -167,7 +173,9 @@ export default class Horse extends Model {
   initNeck() {
     let m = m4.new();
     m = m4.translate(m, 0.0, this.torsoHeight - this.neckHeight + 3.5, 0.0);
-    m = m4.xRotate(angle.radToDeg(this.thetaAngles[this.NECK_ID]));
+    m = m4.xRotate(m, angle.radToDeg(this.anglesSet[this.NECK_ID]));
+    m = m4.yRotate(m, angle.radToDeg(this.anglesSet[this.HEAD2_ID]));
+    m = m4.translate(m, 0.0, -1 * this.neckHeight, 0.0);
 
     this.components[this.NECK_ID] = 
       Model.createNode(
@@ -181,7 +189,8 @@ export default class Horse extends Model {
   initHead() {
     let m = m4.new();
     m = m4.translate(m, (0.0, 0.2 * this.headHeight, 0.0));
-    m = m4.xRotate(angle.radToDeg(this.thetaAngles[this.HEAD1_ID]));
+    m = m4.xRotate(m, angle.radToDeg(this.anglesSet[this.HEAD1_ID]));
+    m = m4.translate(m, (0.0, -0.8 * this.headHeight, 0.0));
 
     this.components[this.HEAD_ID] = 
       Model.createNode(
