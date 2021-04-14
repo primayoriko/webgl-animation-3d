@@ -35,6 +35,7 @@ export default class Horse extends Model {
       buffer: gl.createBuffer(),
       location: gl.getAttribLocation(this.program, "vPosition"),
       value: [],
+      buffer: gl.createBuffer(),
       size: 4,
     };
 
@@ -42,6 +43,7 @@ export default class Horse extends Model {
       scope: "attribute",
       location: gl.getAttribLocation(this.program, "vColor"),
       value: [],
+      buffer: gl.createBuffer(),
       size: 4,
     };
 
@@ -170,7 +172,8 @@ export default class Horse extends Model {
 
     let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
     instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
-    this.updateUniform(this.modelViewMatrix);
+    // this.updateUniform(this.modelViewMatrix);
+    this.updateVars();
     // gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
     for (let i = 0; i < 6; i++) this.gl.drawArrays(this.gl.TRIANGLE_FAN, 4 * i, 4);
   }
