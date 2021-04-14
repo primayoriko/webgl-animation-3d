@@ -179,7 +179,9 @@ const m4 = {
     ];
   },
   translation: (tx, ty, tz) => {
-    return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1];
+    // return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1];
+    return [1, 0, 0, tx, 0, 1, 0, ty, 0, 0, 1, tz, 0, 0, 0, 1];
+
   },
   rotation: (angleInRadians, sign) => {
     let x = 0, y = 0, z = 0;
@@ -198,43 +200,46 @@ const m4 = {
       0, 0, 0, 1
     ];
   },
-  xRotation: function (angleInRadians) {
-    let c = Math.cos(angleInRadians);
-    let s = Math.sin(angleInRadians);
+  // xRotation: function (angleInRadians) {
+  //   let c = Math.cos(angleInRadians);
+  //   let s = Math.sin(angleInRadians);
 
-    return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1];
-  },
-  yRotation: function (angleInRadians) {
-    let c = Math.cos(angleInRadians);
-    let s = Math.sin(angleInRadians);
+  //   return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1];
+  // },
+  // yRotation: function (angleInRadians) {
+  //   let c = Math.cos(angleInRadians);
+  //   let s = Math.sin(angleInRadians);
 
-    return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1];
-  },
-  zRotation: function (angleInRadians) {
-    let c = Math.cos(angleInRadians);
-    let s = Math.sin(angleInRadians);
+  //   return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1];
+  // },
+  // zRotation: function (angleInRadians) {
+  //   let c = Math.cos(angleInRadians);
+  //   let s = Math.sin(angleInRadians);
 
-    return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-  },
+  //   return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+  // },
   scaling: function (sx, sy, sz) {
     return [sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, sz, 0, 0, 0, 0, 1];
   },
   translate: function (m, tx, ty, tz) {
+    // const x = m4.translation(tx, ty, tz);
+    // console.log(x);
+    // return m4.multiply(m, x);
     return m4.multiply(m, m4.translation(tx, ty, tz));
   },
   rotate: (m, angleInRadian, sign) => {
     return m4.multiply(m, m4.rotation(angleInRadian, sign));
   },
-  xRotate: function (m, angleInRadians) {
-    return m4.multiply(m, m4.xRotation(angleInRadians));
-  },
-  yRotate: function (m, angleInRadians) {
-    return m4.multiply(m, m4.yRotation(angleInRadians));
-  },
-  zRotate: function (m, angleInRadians) {
-    return m4.multiply(m, m4.zRotation(angleInRadians));
-  },
-  scale: function (m, sx, sy, sz) {
+  // xRotate: function (m, angleInRadians) {
+  //   return m4.multiply(m, m4.xRotation(angleInRadians));
+  // },
+  // yRotate: function (m, angleInRadians) {
+  //   return m4.multiply(m, m4.yRotation(angleInRadians));
+  // },
+  // zRotate: function (m, angleInRadians) {
+  //   return m4.multiply(m, m4.zRotation(angleInRadians));
+  // },
+  scale: (m, sx, sy, sz) => {
     return m4.multiply(m, m4.scaling(sx, sy, sz));
   },
   orthographic: (

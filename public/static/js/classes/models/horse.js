@@ -127,7 +127,7 @@ export default class Horse extends Model {
     // this.updateVars();
 
     this.initTorso();
-    this.initNeck();
+    // this.initNeck();
     // this.initHead();
 
   }
@@ -183,10 +183,10 @@ export default class Horse extends Model {
 
   initNeck() {
     let m = m4.new();
-    m = m4.translate(m, 0.0, this.torsoHeight - this.neckHeight + 3.5, 0.0);
-    m = m4.xRotate(m, angle.degToRad(this.anglesSet[this.NECK_ID]));
-    m = m4.yRotate(m, angle.degToRad(this.anglesSet[this.HEAD2_ID]));
-    m = m4.translate(m, 0.0, -1 * this.neckHeight, 0.0);
+    // m = m4.translate(m, 0.0, this.torsoHeight - this.neckHeight + 3.5, 0.0);
+    // m = m4.xRotate(m, angle.degToRad(this.anglesSet[this.NECK_ID]));
+    // m = m4.yRotate(m, angle.degToRad(this.anglesSet[this.HEAD2_ID]));
+    // m = m4.translate(m, 0.0, -1 * this.neckHeight, 0.0);
 
     this.components[this.NECK_ID] = 
       Model.createNode(
@@ -199,9 +199,9 @@ export default class Horse extends Model {
 
   initHead() {
     let m = m4.new();
-    m = m4.translate(m, (0.0, 0.2 * this.headHeight, 0.0));
-    m = m4.xRotate(m, angle.degToRad(this.anglesSet[this.HEAD1_ID]));
-    m = m4.translate(m, (0.0, -0.8 * this.headHeight, 0.0));
+    // m = m4.translate(m, (0.0, 0.2 * this.headHeight, 0.0));
+    // m = m4.xRotate(m, angle.degToRad(this.anglesSet[this.HEAD1_ID]));
+    // m = m4.translate(m, (0.0, -0.8 * this.headHeight, 0.0));
 
     this.components[this.HEAD_ID] = 
       Model.createNode(
@@ -225,14 +225,18 @@ export default class Horse extends Model {
     // const gl = this.gl;
     // const updateVars = this.updateVars;
 
-    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
-    instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
-
     this.updateVars();
+
+    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
+    
+    console.log(instanceMatrix);
+    
+    instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
 
     console.log(this.projectionMatrix.value);
     console.log(this.modelViewMatrix.value);
     console.log(this.vPosition.value);
+    console.log(instanceMatrix);
     
     for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
   }
