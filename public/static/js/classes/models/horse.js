@@ -221,20 +221,23 @@ export default class Horse extends Model {
   }
 
   renderTorso() {
-    const { gl } = this;
+    const { gl, modelViewMatrix } = this;
     // const gl = this.gl;
     // const updateVars = this.updateVars;
 
     this.updateVars();
 
-    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
+    let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
     
     console.log(instanceMatrix);
     
     instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
 
+    modelViewMatrix.value = instanceMatrix;
+    this.updateUniform(modelViewMatrix);
+
     console.log(this.projectionMatrix.value);
-    console.log(this.modelViewMatrix.value);
+    console.log(modelViewMatrix.value);
     console.log(this.vPosition.value);
     console.log(instanceMatrix);
     
