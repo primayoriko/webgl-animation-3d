@@ -72,6 +72,8 @@ export default class Horse extends Model {
     this.GLOBAL_X_COORDINATE = 13;
     this.GLOBAL_Y_COORDINATE = 14;
 
+    this.thetaAngles = [90, 120, 90, 70, 10, 80, 10, 90, 40, 70, 30, 0, -90, 0, 0];
+
     this.torsoHeight = 8.0;
     this.torsoWidth = 3.0;
     this.upperArmHeight = 5.0;
@@ -121,9 +123,11 @@ export default class Horse extends Model {
 
   init(){
     this.initShape();
-    this.updateVars();
+    // this.updateVars();
 
     this.initTorso();
+    this.initNeck();
+    this.initHead();
 
   }
 
@@ -149,47 +153,109 @@ export default class Horse extends Model {
 
   initTorso(){
     let m = m4.new();
-    this.components[this.TORSO_ID] = Model.createNode(m, () => this.renderTorso(), null, null);//this.NECK_ID);
+    // m = m4.xRotate(angle.radToDeg(this.thetaAngles[this.GLOBAL_ANGLE_ID]));
+
+    this.components[this.TORSO_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderTorso(), 
+          null, 
+          this.NECK_ID
+        );
+  }
+
+  initNeck() {
+    let m = m4.new();
+    m = m4.translate(m, 0.0, this.torsoHeight - this.neckHeight + 3.5, 0.0);
+    m = m4.xRotate(angle.radToDeg(this.thetaAngles[this.NECK_ID]));
+
+    this.components[this.NECK_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderNeck(), 
+          null, // TODO: ganti 
+          this.HEAD_ID
+        );
+  }
+
+  initHead() {
+    let m = m4.new();
+    m = m4.translate(m, (0.0, 0.2 * this.headHeight, 0.0));
+    m = m4.xRotate(angle.radToDeg(this.thetaAngles[this.HEAD1_ID]));
+
+    this.components[this.HEAD_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderHead(), 
+          null, 
+          null
+        );
+  }
+  
+  initLeftUpperArm() {
+
+  }
+  
+  initLeftLowerArm() {
+
   }
 
   renderTorso() {
+    const { gl } = this;
+    // const gl = this.gl;
+    // const updateVars = this.updateVars;
+
     let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
     instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
 
     this.updateVars();
     
-    for (let i = 0; i < 6; i++) this.gl.drawArrays(this.gl.TRIANGLE_FAN, 4 * i, 4);
+    for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
+
+  renderHead() {
+    const { gl } = this;
+
+    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.headHeight, 0.0);
+    instanceMatrix = m4.scale(instanceMatrix, this.headWidth, this.headHeight, this.headWidth);
+
+    this.updateVars();
+
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
   }
   
-  // head() {
-  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * headHeight, 0.0));
-  //   instanceMatrix = mult(instanceMatrix, scale4(headWidth, headHeight, headWidth));
-  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  // }
+  renderNeck() {
+    const { gl } = this;
+
+    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.neckHeight, 0.0);
+    instanceMatrix = m4.scale(instanceMatrix, this.neckWidth, this.neckHeight, this.neckWidth);
+
+    this.updateVars();
+
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
   
-  // neck() {
-  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * neckHeight, 0.0));
-  //   instanceMatrix = mult(instanceMatrix, scale4(neckWidth, neckHeight, neckWidth));
-  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  // }
+  renderLeftUpperArm() {
+    const { gl } = this;
+
+    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.upperArmHeight, 0.0);
+    instanceMatrix = m4.scale(instanceMatrix, this.upperArmWidth, this.upperArmHeight, this.upperArmWidth);
   
-  // leftUpperArm() {
+    this.updateVars();
+
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
   
-  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperArmHeight, 0.0));
-  //   instanceMatrix = mult(instanceMatrix, scale4(upperArmWidth, upperArmHeight, upperArmWidth));
-  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  // }
-  
-  // leftLowerArm() {
-  
-  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerArmHeight, 0.0));
-  //   instanceMatrix = mult(instanceMatrix, scale4(lowerArmWidth, lowerArmHeight, lowerArmWidth));
-  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  // }
+  renderLeftLowerArm() {
+    const { gl } = this;
+
+    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.lowerArmHeight, 0.0);
+    instanceMatrix = m4.scale(instanceMatrix, this.lowerArmWidth, this.lowerArmHeight, this.lowerArmkWidth);
+
+    this.updateVars();
+
+    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  }
   
   // rightUpperArm() {
   

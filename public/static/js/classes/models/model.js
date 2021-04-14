@@ -64,22 +64,26 @@ export default class Model {
   }
 
   traverse(id){
-    if (id == null) return;
+    if (id === null || id === undefined) return;
 
-    this.stack.push(this.modelViewMatrix.value);
+    const { modelViewMatrix, components, stack } = this;
 
-    this.modelViewMatrix.value = 
-      m4.multiply(this.modelViewMatrix.value, this.components[id].transform);
+    if (components[id] === null || components[id] === undefined) return;
 
-    this.components[id].render();
+    stack.push(modelViewMatrix.value);
 
-    if (this.components[id].child != null) 
-      traverse(this.components[id].child);
+    modelViewMatrix.value = 
+      m4.multiply(modelViewMatrix.value, components[id].transform);
 
-    this.modelViewMatrix.value = this.stack.pop();
+    components[id].render();
 
-    if (this.components[id].sibling != null) 
-      traverse(this.components[id].sibling);
+    if (components[id].child != null) 
+      this.traverse(components[id].child);
+
+    modelViewMatrix.value = stack.pop();
+
+    if (components[id].sibling != null) 
+      this.traverse(components[id].sibling);
 
   }
 
