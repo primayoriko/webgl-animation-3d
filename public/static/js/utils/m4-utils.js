@@ -32,16 +32,19 @@ const m4 = {
   },
   multiply: (a, b) => {
     const c = m4.new();
-    const [tA, tB] = [m4.transpose(a), m4.transpose(b)];
+    // const [tA, tB] = [m4.transpose(a), m4.transpose(b)];
+    const [tA, tB] = [a, b];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
-        c[m4.id(i, j)] = 0;
+        let acc = 0;
         for (let k = 0; k < 4; k++) {
-          c[m4.id(i, j)] += tA[m4.id(i, k)] * tB[m4.id(k, j)];
+          acc += tA[m4.id(i, k)] * tB[m4.id(k, j)];
         }
+        c[m4.id(i, j)] = acc;
       }
     }
-    return m4.transpose(c);
+    // return m4.transpose(c);
+    return c;
   },
   inverse: (m) => {
     let m00 = m[0 * 4 + 0];
@@ -178,6 +181,23 @@ const m4 = {
   translation: (tx, ty, tz) => {
     return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1];
   },
+  rotation: (angleInRadians, sign) => {
+    let x = 0, y = 0, z = 0;
+    if (sign === "x") x = 1;
+    else if (sign === "y") y = 1;
+    else if (sign === "z") z = 1;
+
+    const c = Math.cos(angleInRadians);
+    const s = Math.sin(angleInRadians);
+    const omc = 1.0 - c;
+
+    return [
+      x*x*omc + c,   x*y*omc - z*s, x*z*omc + y*s, 0.0,
+      x*y*omc + z*s, y*y*omc + c,   y*z*omc - x*s, 0.0,
+      x*z*omc - y*s, y*z*omc + x*s, z*z*omc + c,   0.0,
+      0, 0, 0, 1
+    ];
+  },
   xRotation: function (angleInRadians) {
     let c = Math.cos(angleInRadians);
     let s = Math.sin(angleInRadians);
@@ -201,6 +221,9 @@ const m4 = {
   },
   translate: function (m, tx, ty, tz) {
     return m4.multiply(m, m4.translation(tx, ty, tz));
+  },
+  rotate: (m, angleInRadian, sign) => {
+    return m4.multiply(m, m4.rotation(angleInRadian, sign));
   },
   xRotate: function (m, angleInRadians) {
     return m4.multiply(m, m4.xRotation(angleInRadians));

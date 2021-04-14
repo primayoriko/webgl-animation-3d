@@ -16,8 +16,8 @@ function main(){
 
   app.setCamera("orthographic", [-40.0, 40.0, -23.0, 23.0, -40.0, 40.0]);
 
-  console.log(app.models[0].modelViewMatrix);
-  console.log(app.models[0].projectionMatrix);
+  // console.log(app.models[0].modelViewMatrix);
+  // console.log(app.models[0].projectionMatrix);
 
   loadEvents();
 

@@ -72,10 +72,14 @@ export default class Model {
 
     if (components[id] === null || components[id] === undefined) return;
 
+    console.log(modelViewMatrix.value);
+
     stack.push(modelViewMatrix.value);
 
     modelViewMatrix.value = 
       m4.multiply(modelViewMatrix.value, components[id].transform);
+
+    console.log(modelViewMatrix.value);
 
     components[id].render();
 
@@ -83,6 +87,8 @@ export default class Model {
       this.traverse(components[id].child);
 
     modelViewMatrix.value = stack.pop();
+
+    // console.log(modelViewMatrix.value);
 
     if (components[id].sibling != null) 
       this.traverse(components[id].sibling);
