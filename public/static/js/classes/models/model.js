@@ -67,10 +67,10 @@ export default class Model {
     }
   }
 
-  traverse(id){
+  traverse(id, modelViewMatrix=this.modelViewMatrix){
     if (id === null || id === undefined) return;
 
-    const { modelViewMatrix, components, stack } = this;
+    const { components, stack } = this;
 
     if (components[id] === null || components[id] === undefined) return;
 
