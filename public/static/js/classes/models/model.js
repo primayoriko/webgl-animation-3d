@@ -10,42 +10,6 @@ export default class Model {
     this.stack = [];
     this.components = [];
 
-    // this.modelViewMatrix = {
-    //   scope: "uniform",
-    //   location: gl.getUniformLocation(program, "modelViewMatrix"),
-    //   value: m4.new(),
-    //   type: "mat4",
-    // };
-
-    // this.projectionMatrix = {
-    //   scope: "uniform",
-    //   location: gl.getUniformLocation(program, "projectionMatrix"),
-    //   value: m4.new(),
-    //   type: "mat4",
-    // };
-
-    // this.vPosition = {
-    //   scope: "attribute",
-    //   buffer: gl.createBuffer(),
-    //   location: gl.getAttribLocation(program, "vPosition"),
-    //   value: [],
-    //   size: 4,
-    // };
-
-    // this.vColor = {
-    //   scope: "attribute",
-    //   location: gl.getAttribLocation(program, "vColor"),
-    //   value: [],
-    //   size: 4,
-    // };
-
-    // this.vNormal = {
-    //   scope: "attribute",
-    //   location: gl.getAttribLocation(program, "vNormal"),
-    //   value: [],
-    //   size: 3,
-    // };
-
   }
 
   init(){ /* TODO: Implement as your model */ }
