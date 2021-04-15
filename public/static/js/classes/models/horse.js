@@ -123,19 +123,12 @@ export default class Horse extends Model {
   }
 
   init(){
-    this.initShape();
-    // this.updateVars();
-
-    this.initTorso();
-    // this.initNeck();
-    // this.initHead();
-
-  }
-
-  render(){
+    this.initBaseShape();
     this.updateVars();
 
-    this.traverse(this.TORSO_ID);
+    this.initTorso();
+    this.initNeck();
+    // this.initHead();
 
   }
 
@@ -158,20 +151,33 @@ export default class Horse extends Model {
 
   }
 
+  render(){
+    this.updateVars();
+
+    this.traverse(this.TORSO_ID);
+
+  }
+
+  draw(instanceMatrix){
+    const { gl, modelViewMatrix } = this;
+
+    const temp = modelViewMatrix.value;
+
+    modelViewMatrix.value = instanceMatrix;
+    this.updateUniform(modelViewMatrix);
+
+    for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+
+    modelViewMatrix.value = temp;
+  }
+
   initTorso(){
     let m = m4.rotation(angle.degToRad(this.anglesSet[this.GLOBAL_ANGLE_ID]), 'z');
 
-    // console.log(m);
-
-    let x = m4.rotation(angle.degToRad(this.anglesSet[this.TORSO_ID]), 'y');
-
-    // console.log(x);
+    m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TORSO_ID]), 'y');
 
     // m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TORSO_ID]), 'y');
-    m = m4.multiply(m, x);
-
-    // console.log(m);
-
+    // m = m4.multiply(m, x);
     this.components[this.TORSO_ID] = 
       Model.createNode(
           m, 
@@ -182,11 +188,10 @@ export default class Horse extends Model {
   }
 
   initNeck() {
-    let m = m4.new();
-    // m = m4.translate(m, 0.0, this.torsoHeight - this.neckHeight + 3.5, 0.0);
-    // m = m4.xRotate(m, angle.degToRad(this.anglesSet[this.NECK_ID]));
-    // m = m4.yRotate(m, angle.degToRad(this.anglesSet[this.HEAD2_ID]));
-    // m = m4.translate(m, 0.0, -1 * this.neckHeight, 0.0);
+    let m = m4.translation(0.0, this.torsoHeight - this.neckHeight + 3.5, 0.0);
+    m = m4.rotate(m, angle.degToRad(this.anglesSet[this.NECK_ID]), 'x');
+    m = m4.rotate(m, angle.degToRad(this.anglesSet[this.HEAD2_ID]), 'y');
+    m = m4.translate(m, 0.0, -1 * this.neckHeight, 0.0);
 
     this.components[this.NECK_ID] = 
       Model.createNode(
@@ -221,27 +226,26 @@ export default class Horse extends Model {
   }
 
   renderTorso() {
-    const { gl, modelViewMatrix } = this;
-    // const gl = this.gl;
-    // const updateVars = this.updateVars;
+    const { modelViewMatrix } = this;
 
     this.updateVars();
 
     let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
     
-    console.log(instanceMatrix);
-    
     instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
 
-    modelViewMatrix.value = instanceMatrix;
-    this.updateUniform(modelViewMatrix);
+    this.draw(instanceMatrix);
+  }
+  
+  renderNeck() {
+    const { modelViewMatrix } = this;
 
-    console.log(this.projectionMatrix.value);
-    console.log(modelViewMatrix.value);
-    console.log(this.vPosition.value);
-    console.log(instanceMatrix);
-    
-    for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+    this.updateVars();
+
+    let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.neckHeight, 0.0);
+    instanceMatrix = m4.scale(instanceMatrix, this.neckWidth, this.neckHeight, this.neckWidth);
+
+    this.draw(instanceMatrix);
   }
 
   renderHead() {
@@ -249,17 +253,6 @@ export default class Horse extends Model {
 
     let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.headHeight, 0.0);
     instanceMatrix = m4.scale(instanceMatrix, this.headWidth, this.headHeight, this.headWidth);
-
-    this.updateVars();
-
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  }
-  
-  renderNeck() {
-    const { gl } = this;
-
-    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.neckHeight, 0.0);
-    instanceMatrix = m4.scale(instanceMatrix, this.neckWidth, this.neckHeight, this.neckWidth);
 
     this.updateVars();
 
@@ -348,7 +341,7 @@ export default class Horse extends Model {
     // console.log(this.vPosition.value);
   }
   
-  initShape() {
+  initBaseShape() {
     this.makeQuadSurface(1, 0, 3, 2);
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));

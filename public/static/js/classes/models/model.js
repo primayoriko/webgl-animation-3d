@@ -74,14 +74,14 @@ export default class Model {
 
     if (components[id] === null || components[id] === undefined) return;
 
-    console.log(modelViewMatrix.value);
+    // console.log(modelViewMatrix.value);
 
     stack.push(modelViewMatrix.value);
 
     modelViewMatrix.value = 
       m4.multiply(modelViewMatrix.value, components[id].transform);
 
-    console.log(modelViewMatrix.value);
+    // console.log(modelViewMatrix.value);
 
     components[id].render();
 
@@ -89,8 +89,6 @@ export default class Model {
       this.traverse(components[id].child);
 
     modelViewMatrix.value = stack.pop();
-
-    // console.log(modelViewMatrix.value);
 
     if (components[id].sibling != null) 
       this.traverse(components[id].sibling);
@@ -132,11 +130,10 @@ export default class Model {
     const { gl } = this;
     switch (uniform.type) {
       case "mat4":
-        const transposedValue = m4.transpose(uniform.value);
         gl.uniformMatrix4fv(
           uniform.location,
           false,
-          new Float32Array(transposedValue)
+          new Float32Array(m4.transpose(uniform.value))
         );
         break;
       case "vec3":

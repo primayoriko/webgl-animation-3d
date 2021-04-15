@@ -18,7 +18,7 @@ export default class Application {
       matrixArr = m4.orthographic(...params);
       console.log(matrixArr);
     }
-    // TODO: Klo mau proyeksi laine
+    // TODO: Klo mau proyeksi lain
     
     this.models.forEach(model => model.setProjectionMatrix(matrixArr));
   }
