@@ -56,6 +56,8 @@ export default class Model {
 
   setProjectionMatrix(matrixArr){ /* TODO: Implement as your model */ }
 
+  updateVars() { /* TODO: Impelment as your own model */ }
+
   static createNode(transform, render, sibling, child){
     return {
       transform,
@@ -95,8 +97,6 @@ export default class Model {
 
   }
 
-  updateVars() { /* TODO: Impelment as your own model */ }
-
   updateBuffer(bufferContainer){
     if(bufferContainer.scope === "uniform"){
       this.updateUniform(bufferContainer);
@@ -132,10 +132,11 @@ export default class Model {
     const { gl } = this;
     switch (uniform.type) {
       case "mat4":
+        const transposedValue = m4.transpose(uniform.value);
         gl.uniformMatrix4fv(
           uniform.location,
           false,
-          new Float32Array(uniform.value)
+          new Float32Array(transposedValue)
         );
         break;
       case "vec3":
