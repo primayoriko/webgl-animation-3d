@@ -20,7 +20,7 @@ function main(){
   // console.log(app.models[0].modelViewMatrix);
   // console.log(app.models[0].projectionMatrix);
 
-  loadEvents();
+  loadEvents(app);
 
   app.render();
 }
@@ -45,8 +45,47 @@ function init(){
   return { canvas, gl };
 }
 
-function loadEvents(){
+function loadEvents(app){
   // TODO: Add interaksi dari UI gmn gitu
+
+  const exportBtn = document.getElementById('export-btn');
+  const importBtn = document.getElementById('import-btn');
+  const uploadBtn = document.getElementById('upload-btn');
+
+  exportBtn.addEventListener('click', event => {
+      var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(app));
+      var downloadWidget = document.getElementById('download-link');
+      downloadWidget.setAttribute("href",     dataStr     );
+      downloadWidget.setAttribute("download", "data.json");
+      downloadWidget.click();
+      // console.log(JSON.stringify(master));
+  });
+
+  importBtn.addEventListener('click', (e) => {
+      if (window.FileList && window.File && window.FileReader) {
+          uploadBtn.click();
+      } else {
+          alert("file upload not supported by your browser!");
+      }
+  });
+
+  uploadBtn.addEventListener('change', (event) => {
+      const reader = new FileReader();
+      const file = event.target.files[0];
+
+      reader.addEventListener('load', event => {
+          try{
+              var data = JSON.parse(event.target.result);
+          } catch (err) {
+              alert(`invalid json file data!\n${err}`);
+          }
+
+          // app.loadJSONData(data);
+      });
+
+      reader.readAsText(file);
+      // app.render();
+  });
 
 }
 
