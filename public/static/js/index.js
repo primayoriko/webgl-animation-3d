@@ -10,8 +10,8 @@ function main(){
 
   // TODO: Inisiasi + tambah model lain
 
-  app.addModel(new Horse(canvas, gl));
-  // app.addModel(new Crocodile(canvas, gl));
+  // app.addModel(new Horse(canvas, gl));
+  app.addModel(new Crocodile(canvas, gl));
 
 
 
