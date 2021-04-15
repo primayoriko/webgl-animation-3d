@@ -1,6 +1,7 @@
 import Application from "./classes/app.js";
 
 import Horse from "./classes/models/horse.js";
+import Crocodile from "./classes/models/crocodile.js";
 
 function main(){
   const { canvas, gl } = init();
@@ -10,6 +11,8 @@ function main(){
   // TODO: Inisiasi + tambah model lain
 
   app.addModel(new Horse(canvas, gl));
+  // app.addModel(new Crocodile(canvas, gl));
+
 
 
   // app.setCamera("orthographic", [-40.0, 40.0, -23.0, 23.0, -40.0, 40.0]);
