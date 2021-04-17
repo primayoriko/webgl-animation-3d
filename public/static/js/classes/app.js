@@ -16,7 +16,7 @@ export default class Application {
 
     if(type == "orthographic"){
       matrixArr = m4.orthographic(...params);
-      console.log(matrixArr);
+      // console.log(matrixArr);
     }
     // TODO: Klo mau proyeksi lain
     

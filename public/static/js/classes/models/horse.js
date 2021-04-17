@@ -2,7 +2,7 @@ import m4 from "../../utils/m4-utils.js";
 
 import angle from "../../utils/angle-utils.js";
 
-import vector from "../../utils/vector-utils.js";
+// import vector from "../../utils/vector-utils.js";
 
 import { createProgram } from "../../utils/webgl-utils.js";
 
@@ -79,25 +79,6 @@ export default class Horse extends Model {
 
     this.currentFrameIndex = 1;
 
-    // Base chape properties
-    this.verticesSet = [
-      -0.5, -0.5, 0.5, 1.0,
-      -0.5, 0.5, 0.5, 1.0,
-      0.5, 0.5, 0.5, 1.0,
-      0.5, -0.5, 0.5, 1.0,
-      -0.5, -0.5, -0.5, 1.0,
-      -0.5, 0.5, -0.5, 1.0,
-      0.5, 0.5, -0.5, 1.0,
-      0.5, -0.5, -0.5, 1.0
-    ];
-    
-    this.colorsSet = [
-      0.6, 0.32, 0.17, 1.0, // Brown
-      0.7, 0.3, 0.0, 1.0, // Brown dark
-      0.5, 0.3, 0.1, 1.0, // Brown light
-      0.5, 0.25, 0.14, 1.0 // Brown more lighten
-    ];
-
     // Components ID
     this.TORSO_ID = 0;
     this.NECK_ID = 1;
@@ -144,9 +125,6 @@ export default class Horse extends Model {
 
   init(){
     this.initBaseShape();
-
-    console.log(this.vPosition.value);
-
     this.updateVars();
 
     this.initTorso();
@@ -174,34 +152,6 @@ export default class Horse extends Model {
     // this.updateBuffer(this.vNormal);
     this.updateBuffer(this.vIndex);
 
-  }
-
-  generateNormal(){
-    const coordinatesArr = [];
-
-    // const normals: [number, number, number][] = []
-    // for (let i = 0; i < 6; i++) {
-    //   const normCoords = [];
-    //   for (let j = 0; j < 3; j++) {
-    //     const chosenIdx = idx[i * 6 + j];
-    //     normCoords.push(vertices[chosenIdx * 3], vertices[chosenIdx * 3 + 1], vertices[chosenIdx * 3 + 2]);
-    //   }
-      
-    //   const normal = vector.normal(
-    //     normCoords[0], normCoords[1], normCoords[2],
-    //     normCoords[3], normCoords[4], normCoords[5],
-    //     normCoords[6], normCoords[7], normCoords[8],
-    //   )
-    //   normals.push([normal.x, normal.y, normal.z]);
-    // }
-
-    // const vertexNormal: number[] = [] 
-    // for (const norm of normals) {
-    //   for (let i = 0; i < 4; i++) {
-    //     vertexNormal.push(...norm)
-    //   }
-    // }
-    // this.programInfo.aVertexNormal.value = vertexNormal;
   }
 
   setProjectionMatrix(matrixArr){ 
@@ -291,7 +241,7 @@ export default class Horse extends Model {
     
     instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
 
-    // this.draw(instanceMatrix);
+    this.draw(instanceMatrix);
   }
   
   renderNeck() {
@@ -385,126 +335,6 @@ export default class Horse extends Model {
   //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
   //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
   // }
-  
-  makeQuadSurface(a, b, c, d, arr) {
-    a *= 4; b *= 4; c *= 4; d *= 4;
-    // console.log(this.vPosition.value);
-
-    this.vPosition.value.push(...this.verticesSet.slice(a, a+4));
-    this.vPosition.value.push(...this.verticesSet.slice(b, b+4));
-    this.vPosition.value.push(...this.verticesSet.slice(c, c+4));
-    this.vPosition.value.push(...this.verticesSet.slice(d, d+4));
-
-    arr.push(...this.verticesSet.slice(a, a+4));
-    arr.push(...this.verticesSet.slice(b, b+4));
-    arr.push(...this.verticesSet.slice(c, c+4));
-    arr.push(...this.verticesSet.slice(d, d+4));
-
-    console.log(...this.verticesSet.slice(a, a+4));
-    console.log(...this.verticesSet.slice(b, b+4));
-    console.log(...this.verticesSet.slice(c, c+4));
-    console.log(...this.verticesSet.slice(d, d+4));
-
-    // console.log(this.vPosition.value);
-  }
-  
-  initBaseShape2() {
-    const arr = [];
-    this.makeQuadSurface(1, 0, 3, 2, arr);
-    this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.makeQuadSurface(2, 3, 7, 6, arr);
-    this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.makeQuadSurface(3, 0, 4, 7, arr);
-    this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    this.makeQuadSurface(6, 5, 1, 2, arr);
-    this.vColor.value.push(...this.colorsSet.slice(8, 12));
-    this.vColor.value.push(...this.colorsSet.slice(8, 12));
-    this.vColor.value.push(...this.colorsSet.slice(8, 12));
-    this.vColor.value.push(...this.colorsSet.slice(8, 12));
-    this.makeQuadSurface(4, 5, 6, 7, arr);
-    this.vColor.value.push(...this.colorsSet.slice(4, 8));
-    this.vColor.value.push(...this.colorsSet.slice(4, 8));
-    this.vColor.value.push(...this.colorsSet.slice(4, 8));
-    this.vColor.value.push(...this.colorsSet.slice(4, 8));
-    this.makeQuadSurface(5, 4, 0, 1, arr);
-    this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.vColor.value.push(...this.colorsSet.slice(12, 16));
-
-    for(let i = 0; i < this.vColor.value.length; i+=4) {
-      const x = this.vColor.value.slice(i, i + 4);
-      console.log(`${x[0]}, ${x[1]}, ${x[2]}, ${x[3]},`);
-    }
-
-    this.vColor.value = [
-      0.5, 0.25, 0.14, 1,
-      0.5, 0.25, 0.14, 1,
-      0.6, 0.32, 0.17, 1,
-      0.6, 0.32, 0.17, 1,
-
-      0.5, 0.25, 0.14, 1,
-      0.5, 0.25, 0.14, 1,
-      0.6, 0.32, 0.17, 1,
-      0.6, 0.32, 0.17, 1,
-
-      0.6, 0.32, 0.17, 1,
-      0.6, 0.32, 0.17, 1,
-      0.5, 0.25, 0.14, 1,
-      0.5, 0.25, 0.14, 1,
-
-      0.5, 0.3, 0.1, 1,
-      0.5, 0.3, 0.1, 1,
-      0.5, 0.3, 0.1, 1,
-      0.5, 0.3, 0.1, 1,
-
-      0.7, 0.3, 0, 1,
-      0.7, 0.3, 0, 1,
-      0.7, 0.3, 0, 1,
-      0.7, 0.3, 0, 1,
-
-      0.5, 0.25, 0.14, 1,
-      0.5, 0.25, 0.14, 1,
-      0.6, 0.32, 0.17, 1,
-      0.5, 0.25, 0.14, 1,
-
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-      // 0.6, 0.32, 0.17, 1.0,
-    ];
-
-    console.log(arr);
-  }
 
   initBaseShape(){
     // this.vPosition.value = [

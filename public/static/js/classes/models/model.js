@@ -18,7 +18,7 @@ export default class Model {
 
   updateVars() { /* TODO: Impelment as your own model */ }
 
-  generateNormal() { /* TODO: Impelment as your own model */ }
+  // generateNormal() { /* TODO: Impelment as your own model */ }
 
   setProjectionMatrix(matrixArr){ /* TODO: Implement as your model */ }
 
