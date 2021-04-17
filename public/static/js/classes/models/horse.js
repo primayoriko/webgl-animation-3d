@@ -45,6 +45,14 @@ export default class Horse extends Model {
       type: "bool",
     };
 
+    this.sampler2D = {
+      scope: "uniform",
+      location: gl.getUniformLocation(this.program, "uSampler"),
+      value: undefined,
+      type: "texture",
+    };
+
+
     this.vPosition = {
       scope: "attribute",
       buffer: gl.createBuffer(),
@@ -219,7 +227,7 @@ export default class Horse extends Model {
   }
 
   draw(instanceMatrix){
-    const { gl, modelViewMatrix, normalMatrix } = this;
+    const { gl, texture, modelViewMatrix, normalMatrix, sampler2D } = this;
 
     const temp = modelViewMatrix.value;
 
@@ -232,6 +240,12 @@ export default class Horse extends Model {
     const vertexCount = 36;
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
+
+    gl.activeTexture(gl.TEXTURE0);
+
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    gl.uniform1i(sampler2D.location, 0);
 
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     // for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
