@@ -49,4 +49,4 @@ void main()
 }
 `;
 
-export { defaultVS, horseVS  };
+export { defaultVS, horseVS };

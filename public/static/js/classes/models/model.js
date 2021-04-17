@@ -68,6 +68,9 @@ export default class Model {
     } else if (bufferContainer.scope === "attribute") {
       this.updateAttribute(bufferContainer);
 
+    } else if (bufferContainer.scope === "index") {
+      this.updateIndex(bufferContainer);
+
     }
   }
 
@@ -109,6 +112,16 @@ export default class Model {
         gl.uniform1i(uniform.location, uniform.value ? 1 : 0);
         break;
     }
+  }
+
+  updateIndex(indices){
+    const { gl } = this;
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indices.buffer);
+
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
+      new Uint16Array(indices.value), gl.STATIC_DRAW);
+    
   }
 
 }

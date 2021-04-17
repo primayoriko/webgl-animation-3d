@@ -24,9 +24,10 @@ void main()
 {
     highp vec4 texelColor = texture2D(uSampler, vTextureCoord);
 
-    gl_FragColor = enableTextureAndShading? 
+    /* gl_FragColor = enableTextureAndShading? 
         vec4(texelColor.rgb * vLighting, texelColor.a):
-        vColor;
+        vColor; */
+    gl_FragColor =  vColor;
 }
 `;
 

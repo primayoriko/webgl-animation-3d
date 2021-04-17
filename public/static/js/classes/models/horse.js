@@ -59,6 +59,7 @@ export default class Horse extends Model {
       scope: "attribute",
       location: gl.getAttribLocation(this.program, "aVertexNormal"),
       value: [],
+      buffer: gl.createBuffer(),
       size: 3,
     };
 
@@ -66,7 +67,14 @@ export default class Horse extends Model {
       scope: "attribute",
       location: gl.getAttribLocation(this.program, "aTextureCoord"),
       value: [],
+      buffer: gl.createBuffer(),
       size: 2,
+    };
+
+    this.vIndex = {
+      scope: "index",
+      value: [],
+      buffer: gl.createBuffer(),
     };
 
     this.currentFrameIndex = 1;
@@ -136,6 +144,9 @@ export default class Horse extends Model {
 
   init(){
     this.initBaseShape();
+
+    console.log(this.vPosition.value);
+
     this.updateVars();
 
     this.initTorso();
@@ -156,11 +167,12 @@ export default class Horse extends Model {
 
     this.updateBuffer(this.projectionMatrix);
     this.updateBuffer(this.modelViewMatrix);
+    // this.updateBuffer(this.normalMatrix);
 
     this.updateBuffer(this.vPosition);
     this.updateBuffer(this.vColor);
-
     // this.updateBuffer(this.vNormal);
+    this.updateBuffer(this.vIndex);
 
   }
 
@@ -199,14 +211,22 @@ export default class Horse extends Model {
   }
 
   draw(instanceMatrix){
-    const { gl, modelViewMatrix } = this;
+    const { gl, modelViewMatrix, normalMatrix } = this;
 
     const temp = modelViewMatrix.value;
 
     modelViewMatrix.value = instanceMatrix;
-    this.updateUniform(modelViewMatrix);
+    normalMatrix.value = m4.inverse(instanceMatrix);
 
-    for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+    this.updateUniform(modelViewMatrix);
+    this.updateUniform(normalMatrix);
+
+    const vertexCount = 36;
+    const type = gl.UNSIGNED_SHORT;
+    const offset = 0;
+
+    gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+    // for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
 
     modelViewMatrix.value = temp;
   }
@@ -271,7 +291,7 @@ export default class Horse extends Model {
     
     instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
 
-    this.draw(instanceMatrix);
+    // this.draw(instanceMatrix);
   }
   
   renderNeck() {
@@ -366,7 +386,7 @@ export default class Horse extends Model {
   //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
   // }
   
-  makeQuadSurface(a, b, c, d) {
+  makeQuadSurface(a, b, c, d, arr) {
     a *= 4; b *= 4; c *= 4; d *= 4;
     // console.log(this.vPosition.value);
 
@@ -375,39 +395,299 @@ export default class Horse extends Model {
     this.vPosition.value.push(...this.verticesSet.slice(c, c+4));
     this.vPosition.value.push(...this.verticesSet.slice(d, d+4));
 
+    arr.push(...this.verticesSet.slice(a, a+4));
+    arr.push(...this.verticesSet.slice(b, b+4));
+    arr.push(...this.verticesSet.slice(c, c+4));
+    arr.push(...this.verticesSet.slice(d, d+4));
+
+    console.log(...this.verticesSet.slice(a, a+4));
+    console.log(...this.verticesSet.slice(b, b+4));
+    console.log(...this.verticesSet.slice(c, c+4));
+    console.log(...this.verticesSet.slice(d, d+4));
+
     // console.log(this.vPosition.value);
   }
   
-  initBaseShape() {
-    this.makeQuadSurface(1, 0, 3, 2);
+  initBaseShape2() {
+    const arr = [];
+    this.makeQuadSurface(1, 0, 3, 2, arr);
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.makeQuadSurface(2, 3, 7, 6);
+    this.makeQuadSurface(2, 3, 7, 6, arr);
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
-    this.makeQuadSurface(3, 0, 4, 7);
+    this.makeQuadSurface(3, 0, 4, 7, arr);
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    this.makeQuadSurface(6, 5, 1, 2);
+    this.makeQuadSurface(6, 5, 1, 2, arr);
     this.vColor.value.push(...this.colorsSet.slice(8, 12));
     this.vColor.value.push(...this.colorsSet.slice(8, 12));
     this.vColor.value.push(...this.colorsSet.slice(8, 12));
     this.vColor.value.push(...this.colorsSet.slice(8, 12));
-    this.makeQuadSurface(4, 5, 6, 7);
+    this.makeQuadSurface(4, 5, 6, 7, arr);
     this.vColor.value.push(...this.colorsSet.slice(4, 8));
     this.vColor.value.push(...this.colorsSet.slice(4, 8));
     this.vColor.value.push(...this.colorsSet.slice(4, 8));
     this.vColor.value.push(...this.colorsSet.slice(4, 8));
-    this.makeQuadSurface(5, 4, 0, 1);
+    this.makeQuadSurface(5, 4, 0, 1, arr);
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
     this.vColor.value.push(...this.colorsSet.slice(0, 4));
     this.vColor.value.push(...this.colorsSet.slice(12, 16));
+
+    for(let i = 0; i < this.vColor.value.length; i+=4) {
+      const x = this.vColor.value.slice(i, i + 4);
+      console.log(`${x[0]}, ${x[1]}, ${x[2]}, ${x[3]},`);
+    }
+
+    this.vColor.value = [
+      0.5, 0.25, 0.14, 1,
+      0.5, 0.25, 0.14, 1,
+      0.6, 0.32, 0.17, 1,
+      0.6, 0.32, 0.17, 1,
+
+      0.5, 0.25, 0.14, 1,
+      0.5, 0.25, 0.14, 1,
+      0.6, 0.32, 0.17, 1,
+      0.6, 0.32, 0.17, 1,
+
+      0.6, 0.32, 0.17, 1,
+      0.6, 0.32, 0.17, 1,
+      0.5, 0.25, 0.14, 1,
+      0.5, 0.25, 0.14, 1,
+
+      0.5, 0.3, 0.1, 1,
+      0.5, 0.3, 0.1, 1,
+      0.5, 0.3, 0.1, 1,
+      0.5, 0.3, 0.1, 1,
+
+      0.7, 0.3, 0, 1,
+      0.7, 0.3, 0, 1,
+      0.7, 0.3, 0, 1,
+      0.7, 0.3, 0, 1,
+
+      0.5, 0.25, 0.14, 1,
+      0.5, 0.25, 0.14, 1,
+      0.6, 0.32, 0.17, 1,
+      0.5, 0.25, 0.14, 1,
+
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+      // 0.6, 0.32, 0.17, 1.0,
+    ];
+
+    console.log(arr);
+  }
+
+  initBaseShape(){
+    // this.vPosition.value = [
+    //   -0.5, 0.5, 0.5, 1,
+    //   -0.5, -0.5, 0.5, 1,
+    //   0.5, -0.5, 0.5, 1,
+    //   0.5, 0.5, 0.5, 1,
+
+    //   0.5, 0.5, 0.5, 1,
+    //   0.5, -0.5, 0.5, 1,
+    //   0.5, -0.5, -0.5, 1,
+    //   0.5, 0.5, -0.5, 1,
+
+    //   0.5, -0.5, 0.5, 1,
+    //   -0.5, -0.5, 0.5, 1,
+    //   -0.5, -0.5, -0.5, 1,
+    //   0.5, -0.5, -0.5, 1,
+
+    //   0.5, 0.5, -0.5, 1,
+    //   -0.5, 0.5, -0.5, 1,
+    //   -0.5, 0.5, 0.5, 1,
+    //   0.5, 0.5, 0.5, 1,
+
+    //   -0.5, -0.5, -0.5, 1,
+    //   -0.5, 0.5, -0.5, 1,
+    //   0.5, 0.5, -0.5, 1,
+    //   0.5, -0.5, -0.5, 1,
+
+    //   -0.5, 0.5, -0.5, 1,
+    //   -0.5, -0.5, -0.5, 1,
+    //   -0.5, -0.5, 0.5, 1,
+    //   -0.5, 0.5, 0.5, 1
+    // ];
+
+    this.vPosition.value = [
+      // Front face
+      -0.5, -0.5, 0.5, 1,
+      0.5, -0.5, 0.5, 1,
+      0.5, 0.5, 0.5, 1,
+      -0.5, 0.5, 0.5, 1,
+  
+      // Back face
+      -0.5, -0.5, -0.5, 1,
+      -0.5, 0.5, -0.5, 1,
+      0.5, 0.5, -0.5, 1,
+      0.5, -0.5, -0.5, 1,
+  
+      // Top face
+      -0.5, 0.5, -0.5, 1,
+      -0.5, 0.5, 0.5, 1,
+      0.5, 0.5, 0.5, 1,
+      0.5, 0.5, -0.5, 1,
+  
+      // Bottom face
+      -0.5, -0.5, -0.5, 1,
+      0.5, -0.5, -0.5, 1,
+      0.5, -0.5, 0.5, 1,
+      -0.5, -0.5, 0.5, 1,
+  
+      // Right face
+      0.5, -0.5, -0.5, 1,
+      0.5, 0.5, -0.5, 1,
+      0.5, 0.5, 0.5, 1,
+      0.5, -0.5, 0.5, 1,
+  
+      // Left face
+      -0.5, -0.5, -0.5, 1,
+      -0.5, -0.5, 0.5, 1,
+      -0.5, 0.5, 0.5, 1,
+      -0.5, 0.5, -0.5, 1,
+    ];
+
+    this.vNormal.value = [
+      // Front
+      0.0,  0.0,  1.0,
+      0.0,  0.0,  1.0,
+      0.0,  0.0,  1.0,
+      0.0,  0.0,  1.0,
+
+      // Back
+      0.0,  0.0, -1.0,
+      0.0,  0.0, -1.0,
+      0.0,  0.0, -1.0,
+      0.0,  0.0, -1.0,
+
+      // Top
+      0.0,  1.0,  0.0,
+      0.0,  1.0,  0.0,
+      0.0,  1.0,  0.0,
+      0.0,  1.0,  0.0,
+
+      // Bottom
+      0.0, -1.0,  0.0,
+      0.0, -1.0,  0.0,
+      0.0, -1.0,  0.0,
+      0.0, -1.0,  0.0,
+
+      // Right
+      1.0,  0.0,  0.0,
+      1.0,  0.0,  0.0,
+      1.0,  0.0,  0.0,
+      1.0,  0.0,  0.0,
+  
+      // Left
+      -1.0,  0.0,  0.0,
+      -1.0,  0.0,  0.0,
+      -1.0,  0.0,  0.0,
+      -1.0,  0.0,  0.0
+    ];
+
+    this.vTextureCoord.value = [
+      // Front
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      0.0,  1.0,
+      // Back
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      0.0,  1.0,
+      // Top
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      0.0,  1.0,
+      // Bottom
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      0.0,  1.0,
+      // Right
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      0.0,  1.0,
+      // Left
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      0.0,  1.0,
+    ];
+
+    this.vIndex.value = [
+      0,  1,  2,      0,  2,  3,    // front
+      4,  5,  6,      4,  6,  7,    // back
+      8,  9,  10,     8,  10, 11,   // top
+      12, 13, 14,     12, 14, 15,   // bottom
+      16, 17, 18,     16, 18, 19,   // right
+      20, 21, 22,     20, 22, 23,   // left
+    ];
+
+    this.vColor.value = [
+      0.5, 0.25, 0.14, 1,
+      0.5, 0.25, 0.14, 1,
+      0.6, 0.32, 0.17, 1,
+      0.6, 0.32, 0.17, 1,
+
+      0.5, 0.25, 0.14, 1,
+      0.5, 0.25, 0.14, 1,
+      0.6, 0.32, 0.17, 1,
+      0.6, 0.32, 0.17, 1,
+
+      0.6, 0.32, 0.17, 1,
+      0.6, 0.32, 0.17, 1,
+      0.5, 0.25, 0.14, 1,
+      0.5, 0.25, 0.14, 1,
+
+      0.5, 0.3, 0.1, 1,
+      0.5, 0.3, 0.1, 1,
+      0.5, 0.3, 0.1, 1,
+      0.5, 0.3, 0.1, 1,
+
+      0.7, 0.3, 0, 1,
+      0.7, 0.3, 0, 1,
+      0.7, 0.3, 0, 1,
+      0.7, 0.3, 0, 1,
+
+      0.5, 0.25, 0.14, 1,
+      0.5, 0.25, 0.14, 1,
+      0.6, 0.32, 0.17, 1,
+      0.5, 0.25, 0.14, 1,
+    ];
+
   }
 }
