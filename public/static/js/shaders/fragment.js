@@ -31,10 +31,3 @@ void main()
 `;
 
 export { defaultFS, horseFS };
-
-// const shaders = { 
-//     defaultFS: this.defaultFS, 
-//     horseFS: this.horseFS 
-// };
-
-// export default shaders;

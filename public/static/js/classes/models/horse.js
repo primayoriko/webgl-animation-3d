@@ -19,14 +19,21 @@ export default class Horse extends Model {
 
     this.modelViewMatrix = {
       scope: "uniform",
-      location: gl.getUniformLocation(this.program, "modelViewMatrix"),
+      location: gl.getUniformLocation(this.program, "uModelViewMatrix"),
       value: m4.new(),
       type: "mat4",
     };
 
     this.projectionMatrix = {
       scope: "uniform",
-      location: gl.getUniformLocation(this.program, "projectionMatrix"),
+      location: gl.getUniformLocation(this.program, "uProjectionMatrix"),
+      value: m4.new(),
+      type: "mat4",
+    };
+
+    this.normalMatrix = {
+      scope: "uniform",
+      location: gl.getUniformLocation(this.program, "uNormalMatrix"),
       value: m4.new(),
       type: "mat4",
     };
@@ -34,7 +41,7 @@ export default class Horse extends Model {
     this.vPosition = {
       scope: "attribute",
       buffer: gl.createBuffer(),
-      location: gl.getAttribLocation(this.program, "vPosition"),
+      location: gl.getAttribLocation(this.program, "aVertexPosition"),
       value: [],
       buffer: gl.createBuffer(),
       size: 4,
@@ -42,18 +49,25 @@ export default class Horse extends Model {
 
     this.vColor = {
       scope: "attribute",
-      location: gl.getAttribLocation(this.program, "vColor"),
+      location: gl.getAttribLocation(this.program, "aVertexColor"),
       value: [],
       buffer: gl.createBuffer(),
       size: 4,
     };
 
-    // this.vNormal = {
-    //   scope: "attribute",
-    //   location: gl.getAttribLocation(this.program, "vNormal"),
-    //   value: [],
-    //   size: 3,
-    // };
+    this.vNormal = {
+      scope: "attribute",
+      location: gl.getAttribLocation(this.program, "aVertexNormal"),
+      value: [],
+      size: 3,
+    };
+
+    this.vTextureCoord = {
+      scope: "attribute",
+      location: gl.getAttribLocation(this.program, "aTextureCoord"),
+      value: [],
+      size: 2,
+    };
 
     this.currentFrameIndex = 1;
 

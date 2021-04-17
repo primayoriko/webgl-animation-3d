@@ -50,10 +50,3 @@ void main()
 `;
 
 export { defaultVS, horseVS  };
-
-// const shaders = { 
-//   defaultVS: this.defaultVS, 
-//   horseVS:this.horseVS 
-// };
-
-// export default shaders;
