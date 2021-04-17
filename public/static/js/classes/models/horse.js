@@ -86,7 +86,7 @@ export default class Horse extends Model {
 
     this.currentFrameIndex = 1;
 
-    this.TEXTURE_PATH = "../../../img/zebra-skin.jpg";
+    this.TEXTURE_PATH = "./static/img/zebra-skin.jpg";
 
     this.texture = null;
 
@@ -136,9 +136,10 @@ export default class Horse extends Model {
 
   init(){
     this.initBaseShape();
+
     this.updateVars();
 
-    const texture = this.loadTexture();
+    this.loadTexture();
 
     this.initTorso();
     this.initNeck();
