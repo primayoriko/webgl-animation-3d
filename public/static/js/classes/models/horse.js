@@ -38,6 +38,13 @@ export default class Horse extends Model {
       type: "mat4",
     };
 
+    this.enableTextureAndShading = {
+      scope: "uniform",
+      location: gl.getUniformLocation(this.program, "enableTextureAndShading"),
+      value: true,
+      type: "bool",
+    };
+
     this.vPosition = {
       scope: "attribute",
       buffer: gl.createBuffer(),
@@ -78,6 +85,10 @@ export default class Horse extends Model {
     };
 
     this.currentFrameIndex = 1;
+
+    this.TEXTURE_PATH = "../../../img/zebra-skin.jpg";
+
+    this.texture = null;
 
     // Components ID
     this.TORSO_ID = 0;
@@ -127,6 +138,8 @@ export default class Horse extends Model {
     this.initBaseShape();
     this.updateVars();
 
+    const texture = this.loadTexture();
+
     this.initTorso();
     this.initNeck();
     this.initHead();
@@ -145,11 +158,11 @@ export default class Horse extends Model {
 
     this.updateBuffer(this.projectionMatrix);
     this.updateBuffer(this.modelViewMatrix);
-    // this.updateBuffer(this.normalMatrix);
+    this.updateBuffer(this.normalMatrix);
+    this.updateBuffer(this.enableTextureAndShading);
 
     this.updateBuffer(this.vPosition);
     this.updateBuffer(this.vColor);
-    // this.updateBuffer(this.vNormal);
     this.updateBuffer(this.vIndex);
 
   }
@@ -158,6 +171,50 @@ export default class Horse extends Model {
     this.projectionMatrix.value = matrixArr;
     this.gl.useProgram(this.program);
     this.updateUniform(this.projectionMatrix);
+  }
+
+  loadTexture() {
+    const isPowerOf2 = (value) => {
+      return (value & (value - 1)) == 0;
+    }
+
+    const { gl } = this;
+    const texture = gl.createTexture();
+
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+  
+    const level = 0;
+    const internalFormat = gl.RGBA;
+    const width = 1;
+    const height = 1;
+    const border = 0;
+    const srcFormat = gl.RGBA;
+    const srcType = gl.UNSIGNED_BYTE;
+    const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                  width, height, border, srcFormat, srcType,
+                  pixel);
+  
+    const image = new Image();
+
+    image.onload = () => {
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                    srcFormat, srcType, image);
+  
+      if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+        gl.generateMipmap(gl.TEXTURE_2D);
+      } else {
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      }
+    };
+
+    image.src = this.TEXTURE_PATH;
+  
+    this.texture = texture;
   }
 
   draw(instanceMatrix){
