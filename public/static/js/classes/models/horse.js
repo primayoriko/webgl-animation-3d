@@ -1,20 +1,21 @@
-import Model from "./model.js";
-
 import m4 from "../../utils/m4-utils.js";
 
 import angle from "../../utils/angle-utils.js";
 
+import vector from "../../utils/vector-utils.js";
+
 import { createProgram } from "../../utils/webgl-utils.js";
 
-import vertexShader from "../../shaders/vertex.js";
+import { horseVS } from "../../shaders/vertex.js";
 
-import fragmentShader from "../../shaders/fragment.js";
+import { horseFS } from "../../shaders/fragment.js";
 
+import Model from "./model.js";
 export default class Horse extends Model {
   constructor(canvas, gl){
     super(canvas, gl);
 
-    this.program = createProgram(this.gl, vertexShader, fragmentShader);
+    this.program = createProgram(this.gl, horseVS, horseFS);
 
     this.modelViewMatrix = {
       scope: "uniform",
@@ -129,10 +130,11 @@ export default class Horse extends Model {
 
   }
 
-  setProjectionMatrix(matrixArr){ 
-    this.projectionMatrix.value = matrixArr;
-    this.gl.useProgram(this.program);
-    this.updateUniform(this.projectionMatrix);
+  render(){
+    this.updateVars();
+
+    this.traverse(this.TORSO_ID);
+
   }
 
   updateVars() {
@@ -148,11 +150,38 @@ export default class Horse extends Model {
 
   }
 
-  render(){
-    this.updateVars();
+  generateNormal(){
+    const coordinatesArr = [];
 
-    this.traverse(this.TORSO_ID);
+    // const normals: [number, number, number][] = []
+    // for (let i = 0; i < 6; i++) {
+    //   const normCoords = [];
+    //   for (let j = 0; j < 3; j++) {
+    //     const chosenIdx = idx[i * 6 + j];
+    //     normCoords.push(vertices[chosenIdx * 3], vertices[chosenIdx * 3 + 1], vertices[chosenIdx * 3 + 2]);
+    //   }
+      
+    //   const normal = vector.normal(
+    //     normCoords[0], normCoords[1], normCoords[2],
+    //     normCoords[3], normCoords[4], normCoords[5],
+    //     normCoords[6], normCoords[7], normCoords[8],
+    //   )
+    //   normals.push([normal.x, normal.y, normal.z]);
+    // }
 
+    // const vertexNormal: number[] = [] 
+    // for (const norm of normals) {
+    //   for (let i = 0; i < 4; i++) {
+    //     vertexNormal.push(...norm)
+    //   }
+    // }
+    // this.programInfo.aVertexNormal.value = vertexNormal;
+  }
+
+  setProjectionMatrix(matrixArr){ 
+    this.projectionMatrix.value = matrixArr;
+    this.gl.useProgram(this.program);
+    this.updateUniform(this.projectionMatrix);
   }
 
   draw(instanceMatrix){

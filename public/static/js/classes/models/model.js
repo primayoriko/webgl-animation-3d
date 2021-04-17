@@ -16,11 +16,13 @@ export default class Model {
 
   render(){ /* TODO: Implement as your model */ }
 
-  changeState(){ /* TODO: Implement as your model and as a time-variate function */ }
+  updateVars() { /* TODO: Impelment as your own model */ }
+
+  generateNormal() { /* TODO: Impelment as your own model */ }
 
   setProjectionMatrix(matrixArr){ /* TODO: Implement as your model */ }
 
-  updateVars() { /* TODO: Impelment as your own model */ }
+  changeState(){ /* TODO: Implement as your model and as a time-variate function */ }
 
   static createNode(transform, render, sibling, child){
     return {

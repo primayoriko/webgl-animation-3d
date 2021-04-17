@@ -6,9 +6,9 @@ import angle from "../../utils/angle-utils.js";
 
 import { createProgram } from "../../utils/webgl-utils.js";
 
-import vertexShader from "../../shaders/vertex.js";
+import { defaultVS } from "../../shaders/vertex.js";
 
-import fragmentShader from "../../shaders/fragment.js";
+import { defaultFS } from "../../shaders/fragment.js";
 
 export default class Crocodile extends Model {
 
@@ -16,7 +16,7 @@ export default class Crocodile extends Model {
     constructor(canvas, gl){
       super(canvas, gl);
 
-      this.program = createProgram(this.gl, vertexShader, fragmentShader);
+      this.program = createProgram(this.gl, defaultVS, defaultFS);
   
       this.modelViewMatrix = {
         scope: "uniform",
