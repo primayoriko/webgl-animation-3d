@@ -11,6 +11,8 @@ import vertexShader from "../../shaders/vertex.js";
 import fragmentShader from "../../shaders/fragment.js";
 
 export default class Crocodile extends Model {
+
+    // CONSTRUCTOR
     constructor(canvas, gl){
       super(canvas, gl);
 
@@ -69,36 +71,36 @@ export default class Crocodile extends Model {
       this.GLOBAL_X_COORDINATE = 15;
       this.GLOBAL_Y_COORDINATE = 16;
 
-    this.anglesSet = [90, 0, 0, 0, 0 ,0, 110, -20, 110, -20, 110, -20, 110, -20, -90, 0, 0];
+      this.anglesSet = [90, 0, 0, 0, 0 ,0, 110, -20, 110, -20, 110, -20, 110, -20, -90, 0, 0];
 
 
-      this.torsoHeight = 20.0;
-      this.torsoWidth = 4.0;
+      this.torsoHeight = 27.0;
+      this.torsoWidth = 3.0;
 
-      this.upperArmHeight = 2.2;
-      this.lowerArmHeight = 1.3;
-      this.upperLegHeight = 2.2;
-      this.lowerLegHeight = 1.3;
+      this.upperArmHeight = 2.0;
+      this.lowerArmHeight = 1.1;
+      this.upperLegHeight = 2.0;
+      this.lowerLegHeight = 1.1;
 
-      this.upperArmWidth = 1.8;
-      this.lowerArmWidth = 4.2;
-      this.upperLegWidth = 1.8;
-      this.lowerLegWidth = 4.2;
+      this.upperArmWidth = 2.3;
+      this.lowerArmWidth = 6.0;
+      this.upperLegWidth = 2.3;
+      this.lowerLegWidth = 6.0;
 
       this.headHeight = .0;
       this.headWidth = 1.5;
 
-      this.mouthTopHeight = 10;
-      this.mouthTopWidth = 2.5;
+      this.mouthTopHeight = 12;
+      this.mouthTopWidth = 1.9;
 
-      this.mouthBtnHeight = 9.7;
-      this.mouthBtnWidth = 1.5;
+      this.mouthBtnHeight = 11;
+      this.mouthBtnWidth = 1.3;
 
-      this.eyeHeight = 2;
-      this.eyeWidth = 2;
+      this.eyeHeight = 2.5;
+      this.eyeWidth = 2.5;
 
-      this.tailHeight = 14;
-      this.tailWidth = 0.9 * this.torsoWidth;
+      this.tailHeight = 16;
+      this.tailWidth = 0.75 * this.torsoWidth;
 
       this.numNodes = 14;
       this.numAngles = 12;
@@ -139,10 +141,24 @@ export default class Crocodile extends Model {
       this.init();
     }
 
+    // IMPORTANT FUNCTION
+
     init(){
       this.initShape();
       this.initTorso();
       this.initMouth_Top();
+      this.initEye_Left();
+      this.initEye_Right();
+      this.initMouth_Btn();
+      this.initTail();
+      this.initLeftFront_Leg();
+      this.initRightFront_Leg();
+      this.initLeftBack_Leg();
+      this.initRightBack_Leg();
+      this.initLeftFront_foot();
+      this.initRightFront_foot();
+      this.initLeftBack_foot();
+      this.initRightBack_foot();
 
     }
     render(){
@@ -168,11 +184,25 @@ export default class Crocodile extends Model {
   
       // this.updateBuffer(this.vNormal);
     }
+    draw(instanceMatrix){
+      const { gl, modelViewMatrix } = this;
+  
+      const temp = modelViewMatrix.value;
+  
+      modelViewMatrix.value = instanceMatrix;
+      this.updateUniform(modelViewMatrix);
+  
+      for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+  
+      modelViewMatrix.value = temp;
+    }
+
+    //INIT FUNCTION
 
     initTorso(){
       let m = m4.rotation(angle.degToRad(this.anglesSet[this.GLOBAL_ANGLE_ID]), 'z');
-      let x = m4.rotation(angle.degToRad(this.anglesSet[this.TORSO_ID]), 'y');
-      m = m4.multiply(m, x);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TORSO_ID]), 'y');
+
       this.components[this.TORSO_ID] = 
         Model.createNode(
             m, 
@@ -183,140 +213,288 @@ export default class Crocodile extends Model {
     }
 
     initMouth_Top(){
-      let m = m4.new();
-      m = m4.translate(m, 0.0, this.torsoHeight + this.mouthTopHeight, -1.2);
-      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.MOUTH_TOP_ID]), 'x');   
-      m =  m4.translate(m, 0.0, -1 * this.mouthTopHeight, 0.0);  
+      let m = m4.translation( 0.0, this.torsoHeight + this.mouthTopHeight, -0.8);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.MOUTH_TOP_ID]), 'x');
+      m = m4.translate(m, 0.0, -1 * this.mouthTopHeight, 0.0);
 
       this.components[this.MOUTH_TOP_ID] = 
       Model.createNode(
           m, 
           () => this.renderMouth_up(), 
+          this.MOUTH_BTN_ID,  
+          this.EYE_LEFT_ID
+        );
+    }
+
+    initEye_Left(){
+      let m = m4.translation( 0.0, 0, - this.mouthTopWidth/2);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.EYE_LEFT_ID]), 'x');
+
+      this.components[this.EYE_LEFT_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderEyeLeft(), 
+          this.EYE_RIGHT_ID,  
+          null
+        );
+    }
+
+    initEye_Right(){
+      let m = m4.translation( 0.0, 0, - this.mouthTopWidth/2);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.EYE_RIGHT_ID]), 'x');
+
+      this.components[this.EYE_RIGHT_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderEyeRight(), 
           null,  
           null
         );
     }
+
+    initMouth_Btn(){
+      let m = m4.translation( 0.0, this.torsoHeight + this.mouthBtnHeight, 0.9);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.MOUTH_BTN_ID]), 'x');
+      m = m4.translate(m, 0.0, -1 * this.mouthBtnHeight, 0.0);
+
+      this.components[this.MOUTH_BTN_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderMouth_down(), 
+          this.TAIL_ID,  
+          null
+        );
+    }
     
+    initTail(){
+      let m = m4.translation( 0.0, -this.tailHeight, 0.0);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TAIL_ID]), 'x');
+
+      this.components[this.TAIL_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderTail(), 
+          this.LEFT_FRONT_LEG_ID,  
+          null
+        );
+    }
+    initLeftFront_Leg(){
+      let m = m4.translation( -(this.torsoWidth / 3 + this.upperArmWidth), 0.85 * this.torsoHeight, 1.8);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.LEFT_FRONT_LEG_ID]), 'x');
+
+      this.components[this.LEFT_FRONT_LEG_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderLeftUpperArm(), 
+          this.RIGHT_FRONT_LEG_ID,  
+          this.LEFT_FRONT_FOOT_ID
+        );
+    }
+    initRightFront_Leg(){
+      let m = m4.translation( -(this.torsoWidth / 3 + this.upperArmWidth), 0.85 * this.torsoHeight, 1.8);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.RIGHT_FRONT_LEG_ID]), 'x');
+
+      this.components[this.RIGHT_FRONT_LEG_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderLeftUpperArm(), 
+          this.LEFT_BACK_LEG_ID,  
+          this.RIGHT_FRONT_FOOT_ID
+        );
+    }
+
+    initLeftBack_Leg(){
+      let m = m4.translation( -(this.torsoWidth / 3 + this.upperLegWidth), 1 * this.upperLegHeight, 1.8);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.LEFT_BACK_LEG_ID]), 'x');
+
+      this.components[this.LEFT_BACK_LEG_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderLeftUpperLeg(), 
+          this.RIGHT_BACK_LEG_ID,  
+          this.LEFT_BACK_FOOT_ID
+        );
+    }
+
+    initRightBack_Leg(){
+      let m = m4.translation( -(this.torsoWidth / 3 + this.upperLegWidth), 1 * this.upperLegHeight, 1.8);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.RIGHT_BACK_LEG_ID]), 'x');
+
+      this.components[this.RIGHT_BACK_LEG_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderRightUpperLeg(), 
+          null,  
+          this.RIGHT_BACK_FOOT_ID
+        );
+    }
+
+    initLeftFront_foot(){
+      let m = m4.translation( 0.0, this.upperArmHeight-1.1, -1.7);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.LEFT_FRONT_FOOT_ID]), 'x');
+
+      this.components[this.LEFT_FRONT_FOOT_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderLeftLowerArm(), 
+          null,
+          null
+        );
+    }
+    initRightFront_foot(){
+      let m = m4.translation( 0.0, this.upperArmHeight-1.1, -1.7);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.RIGHT_FRONT_FOOT_ID]), 'x');
+
+      this.components[this.RIGHT_FRONT_FOOT_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderRightLowerArm(), 
+          null,
+          null
+        );
+    }
+
+    initLeftBack_foot(){
+      let m = m4.translation( 0.0, this.upperLegHeight-1.1, -1.7);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.LEFT_BACK_FOOT_ID]), 'x');
+
+      this.components[this.LEFT_BACK_FOOT_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderLeftLowerLeg(), 
+          null,
+          null
+        );
+    }
+
+    initRightBack_foot(){
+      let m = m4.translation( 0.0, this.upperLegHeight-1.1, -1.7);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.RIGHT_BACK_FOOT_ID]), 'x');
+
+      this.components[this.RIGHT_BACK_FOOT_ID] = 
+      Model.createNode(
+          m, 
+          () => this.renderRightLowerLeg(), 
+          null,
+          null
+        );
+    }
+    
+    // RENDER FUNCTION
 
     renderTorso() {
-      const { gl, modelViewMatrix } = this;
+      const { modelViewMatrix } = this;
       this.updateVars();
-
-      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);     
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
       instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth+ 1.5);
-
-      modelViewMatrix.value = instanceMatrix;
-      this.updateUniform(modelViewMatrix);
-      
-      for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+      this.draw(instanceMatrix);
     }
     
     renderMouth_up() {
-      const { gl, modelViewMatrix } = this;
+      const { modelViewMatrix } = this;
       this.updateVars();
-      console.log("haii ini rendermouth");
-
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.mouthTopHeight, 0.0);     
       instanceMatrix = m4.scale(instanceMatrix, this.mouthTopWidth, this.mouthTopHeight, this.mouthTopWidth);
-      
-      modelViewMatrix.value = instanceMatrix;
-      this.updateUniform(modelViewMatrix);
-  
-      for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+      this.draw(instanceMatrix);
     }
     
-    // eyeLeft() {
-    //   let instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * eyeHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(eyeWidth, eyeHeight, eyeWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
+    renderEyeLeft() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5*this.eyeHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.eyeWidth/2, this.eyeHeight, this.eyeWidth);
+      this.draw(instanceMatrix);
+    }
+
+    renderEyeRight() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5*this.eyeHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.eyeWidth/2, this.eyeHeight, this.eyeWidth);
+      this.draw(instanceMatrix);
+    }
     
-    // eyeRight() {
-    //   let instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * eyeHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(eyeWidth, eyeHeight, eyeWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
+    renderMouth_down() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.mouthBtnHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.mouthBtnWidth, this.mouthBtnHeight, this.mouthBtnWidth);
+      this.draw(instanceMatrix);
+    }
+
+    renderTail() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.tailHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.tailWidth, this.tailHeight, this.tailWidth);
+      this.draw(instanceMatrix);
+    }
     
-    // mouth_down() {
-    //   let instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * mouthBtnHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(mouthBtnWidth, mouthBtnHeight, mouthBtnWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
+    renderLeftUpperArm() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperArmHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.upperArmWidth, this.upperArmHeight, this.upperArmWidth);
+      this.draw(instanceMatrix);
+    }
+
+    renderRightUpperArm() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperArmHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.upperArmWidth, this.upperArmHeight, this.upperArmWidth);
+      this.draw(instanceMatrix);
+    }
+
+        
+    renderLeftUpperLeg() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperLegHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.upperLegWidth, this.upperLegHeight, this.upperLegWidth);
+      this.draw(instanceMatrix);
+    }
     
-    // tail() {
-       
-    //   instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * tailHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(tailWidth, tailHeight, tailWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
+    renderRightUpperLeg() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperLegHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.upperLegWidth, this.upperLegHeight, this.upperLegWidth);
+      this.draw(instanceMatrix);
+    }
     
-    // leftUpperArm() {
+    renderLeftLowerArm() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.lowerArmHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.lowerArmWidth, this.lowerArmHeight, this.lowerArmWidth);
+      this.draw(instanceMatrix);
+    }
     
-    //   instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * upperArmHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(upperArmWidth, upperArmHeight, upperArmWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
+    renderRightLowerArm() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.lowerArmHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.lowerArmWidth, this.lowerArmHeight, this.lowerArmWidth);
+      this.draw(instanceMatrix);
+    }
+
     
-    // leftLowerArm() {
+    renderLeftLowerLeg() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.lowerLegHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.lowerLegWidth, this.lowerLegHeight, this.lowerLegWidth);
+      this.draw(instanceMatrix);
+    }
     
-    //   instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * lowerArmHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(lowerArmWidth, lowerArmHeight, lowerArmWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
-    
-    // rightUpperArm() {
-    
-    //   instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * upperArmHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(upperArmWidth, upperArmHeight, upperArmWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
-    
-    // rightLowerArm() {
-    
-    //   instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * lowerArmHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(lowerArmWidth, lowerArmHeight, lowerArmWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
-    
-    // leftUpperLeg() {
-    
-    //   instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * upperLegHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(upperLegWidth, upperLegHeight, upperLegWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
-    
-    // leftLowerLeg() {
-    
-    //   instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * lowerLegHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(lowerLegWidth, lowerLegHeight, lowerLegWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
-    
-    // rightUpperLeg() {
-    
-    //   instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * upperLegHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(upperLegWidth, upperLegHeight, upperLegWidth));
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
-    
-    // rightLowerLeg() {
-    
-    //   instanceMatrix = multiply(modelViewMatrix, translate(0.0, 0.5 * lowerLegHeight, 0.0));
-    //   instanceMatrix = multiply(instanceMatrix, scale4(lowerLegWidth, lowerLegHeight, lowerLegWidth))
-    //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-    //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-    // }
+    renderRightLowerLeg() {
+      const { modelViewMatrix } = this;
+      this.updateVars();
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.lowerLegHeight, 0.0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.lowerLegWidth, this.lowerLegHeight, this.lowerLegWidth);
+      this.draw(instanceMatrix);
+    }
 
     makeQuadSurface(a, b, c, d) {
       a *= 4; b *= 4; c *= 4; d *= 4;
