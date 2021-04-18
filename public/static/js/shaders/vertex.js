@@ -16,7 +16,7 @@ void main()
 }
 `;
 
-const horseVS = `
+const zebraVS = `
 uniform mat4 uNormalMatrix;
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
