@@ -11,7 +11,7 @@ export default class Crocodile extends Model {
     constructor(canvas, gl){
       super(canvas, gl);
 
-      this.program = createProgram(this.gl, crocodileVS, crocodileFS);
+      this.program = createProgram(this.gl, defaultVS, defaultFS);
   
       this.modelViewMatrix = {
         scope: "uniform",
@@ -79,21 +79,23 @@ export default class Crocodile extends Model {
       this.torsoHeight = 27.0;
       this.torsoWidth = 3.0;
 
-      this.upperArmHeight = 2.0;
-      this.lowerArmHeight = 1.1;
-      this.upperLegHeight = 2.0;
-      this.lowerLegHeight = 1.1;
-
-      this.upperArmWidth = 2.3;
+      this.upperArmWidth = 1.6;
       this.lowerArmWidth = 6.0;
-      this.upperLegWidth = 2.3;
+      this.upperLegWidth = 1.6;
       this.lowerLegWidth = 6.0;
+
+      this.upperArmHeight = 3.0;
+      this.lowerArmHeight = this.upperArmWidth-0.2;
+      this.upperLegHeight = 3.0;
+      this.lowerLegHeight = this.upperLegWidth-0.2;
 
       this.headHeight = .0;
       this.headWidth = 1.5;
 
       this.mouthTopHeight = 12;
       this.mouthTopWidth = 1.9;
+
+      this.mouthWidth = 5;
 
       this.mouthBtnHeight = 11;
       this.mouthBtnWidth = 1.3;
@@ -102,13 +104,22 @@ export default class Crocodile extends Model {
       this.eyeWidth = 2.5;
 
       this.tailHeight = 16;
-      this.tailWidth = 0.75 * this.torsoWidth;
+      this.tailWidth = this.torsoWidth;
 
       this.numNodes = 14;
       this.numAngles = 12;
 
       this.frameOn = 0;
       this.theta = [90, 0, 0, 0, 0 ,0, 110, -20, 110, -20, 110, -20, 110, -20, -90, 0, 0];
+
+      this.speed = {
+        head: 1.5,
+        leg: 1,
+        tail:3,
+        mouth:1,
+        torso:0.5
+
+    }
 
       this.knownLastIndex = 1;
       this.numVertices = 24;
@@ -142,6 +153,44 @@ export default class Crocodile extends Model {
       
       this.init();
     }
+    animate(frame) {
+      this.anglesSet[this.TORSO_ID] = this.anglesSet[this.TORSO_ID] + this.speed.torso
+      this.initTorso()
+      this.anglesSet[this.MOUTH_TOP_ID] = this.anglesSet[this.MOUTH_TOP_ID] - this.speed.mouth
+      this.initMouth_Top()
+
+      this.anglesSet[this.LEFT_BACK_LEG_ID] = this.anglesSet[this.LEFT_BACK_LEG_ID] - this.speed.leg
+      this.initLeftBack_Leg()
+      this.anglesSet[this.RIGHT_FRONT_LEG_ID] = this.anglesSet[this.RIGHT_FRONT_LEG_ID] - this.speed.leg
+      this.initRightFront_Leg()
+
+      this.anglesSet[this.LEFT_BACK_FOOT_ID] = this.anglesSet[this.LEFT_BACK_FOOT_ID] + this.speed.leg
+      this.initLeftBack_foot()
+      this.anglesSet[this.RIGHT_FRONT_FOOT_ID] = this.anglesSet[this.RIGHT_FRONT_FOOT_ID] + this.speed.leg
+      this.initRightFront_foot()
+
+      this.anglesSet[this.RIGHT_BACK_LEG_ID] = this.anglesSet[this.RIGHT_BACK_LEG_ID] - this.speed.leg *-1
+      this.initRightBack_Leg()
+      this.anglesSet[this.LEFT_FRONT_LEG_ID] = this.anglesSet[this.LEFT_FRONT_LEG_ID] - this.speed.leg *-1
+      this.initLeftFront_Leg()
+
+      this.anglesSet[this.RIGHT_BACK_FOOT_ID] = this.anglesSet[this.RIGHT_BACK_FOOT_ID] + this.speed.leg 
+      this.initRightBack_foot()
+      this.anglesSet[this.LEFT_FRONT_FOOT_ID] = this.anglesSet[this.LEFT_FRONT_FOOT_ID] + this.speed.leg 
+      this.initLeftFront_foot()
+
+      this.anglesSet[this.TAIL_ID] = this.anglesSet[this.TAIL_ID] - this.speed.tail
+      this.initTail()
+
+      if (frame % 36 == 0) {
+          this.speed.mouth *= -1
+          this.speed.tail *= -1
+          this.speed.leg *= -1
+      }
+      if (frame % 72 == 0) {
+        this.speed.tail *= -1
+    }
+  }
 
     createTexture(){
       // Create a texture.
@@ -251,9 +300,9 @@ export default class Crocodile extends Model {
     }
 
     initMouth_Top(){
-      let m = m4.translation( 0.0, this.torsoHeight + this.mouthTopHeight, -0.8);
+      let m = m4.translation( 0.0, this.torsoHeight, -0.8);
       m = m4.rotate(m, angle.degToRad(this.anglesSet[this.MOUTH_TOP_ID]), 'x');
-      m = m4.translate(m, 0.0, -1 * this.mouthTopHeight, 0.0);
+      // m = m4.translate(m, 0.0, -1 * this.mouthTopHeight, 0.0);
 
       this.components[this.MOUTH_TOP_ID] = 
       Model.createNode(
@@ -266,7 +315,7 @@ export default class Crocodile extends Model {
 
     initEye_Left(){
       let m = m4.translation( 0.0, 0, - this.mouthTopWidth/2);
-      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.EYE_LEFT_ID]), 'x');
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.EYE_LEFT_ID]), 'y');
 
       this.components[this.EYE_LEFT_ID] = 
       Model.createNode(
@@ -305,8 +354,10 @@ export default class Crocodile extends Model {
     }
     
     initTail(){
-      let m = m4.translation( 0.0, -this.tailHeight, 0.0);
-      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TAIL_ID]), 'x');
+      let m = m4.translation( 0.0, 0, 0.0);
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TAIL_ID]), 'z');
+      m = m4.translate(m, 0.0, -1 * this.tailHeight, 0.0);
+
 
       this.components[this.TAIL_ID] = 
       Model.createNode(
@@ -317,7 +368,7 @@ export default class Crocodile extends Model {
         );
     }
     initLeftFront_Leg(){
-      let m = m4.translation( -(this.torsoWidth / 3 + this.upperArmWidth), 0.85 * this.torsoHeight, 1.8);
+      let m = m4.translation( this.torsoWidth, 0.85 * this.torsoHeight, 1.8);
       m = m4.rotate(m, angle.degToRad(this.anglesSet[this.LEFT_FRONT_LEG_ID]), 'x');
 
       this.components[this.LEFT_FRONT_LEG_ID] = 
@@ -329,7 +380,7 @@ export default class Crocodile extends Model {
         );
     }
     initRightFront_Leg(){
-      let m = m4.translation( -(this.torsoWidth / 3 + this.upperArmWidth), 0.85 * this.torsoHeight, 1.8);
+      let m = m4.translation( -this.torsoWidth , 0.85 * this.torsoHeight, 1.8);
       m = m4.rotate(m, angle.degToRad(this.anglesSet[this.RIGHT_FRONT_LEG_ID]), 'x');
 
       this.components[this.RIGHT_FRONT_LEG_ID] = 
@@ -342,7 +393,7 @@ export default class Crocodile extends Model {
     }
 
     initLeftBack_Leg(){
-      let m = m4.translation( -(this.torsoWidth / 3 + this.upperLegWidth), 1 * this.upperLegHeight, 1.8);
+      let m = m4.translation( this.torsoWidth, 1 * this.upperLegHeight, 1.8);
       m = m4.rotate(m, angle.degToRad(this.anglesSet[this.LEFT_BACK_LEG_ID]), 'x');
 
       this.components[this.LEFT_BACK_LEG_ID] = 
@@ -355,7 +406,7 @@ export default class Crocodile extends Model {
     }
 
     initRightBack_Leg(){
-      let m = m4.translation( -(this.torsoWidth / 3 + this.upperLegWidth), 1 * this.upperLegHeight, 1.8);
+      let m = m4.translation( -this.torsoWidth , 1 * this.upperLegHeight, 1.8);
       m = m4.rotate(m, angle.degToRad(this.anglesSet[this.RIGHT_BACK_LEG_ID]), 'x');
 
       this.components[this.RIGHT_BACK_LEG_ID] = 
@@ -424,7 +475,7 @@ export default class Crocodile extends Model {
       const { modelViewMatrix } = this;
       this.updateVars();
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
-      instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth+ 1.5);
+      instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth+3, this.torsoHeight, this.torsoWidth+ 1.5);
       this.draw(instanceMatrix);
     }
     
@@ -432,23 +483,23 @@ export default class Crocodile extends Model {
       const { modelViewMatrix } = this;
       this.updateVars();
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.mouthTopHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.mouthTopWidth, this.mouthTopHeight, this.mouthTopWidth);
+      instanceMatrix = m4.scale(instanceMatrix, this.mouthWidth-1.5, this.mouthTopHeight, this.mouthTopWidth);
       this.draw(instanceMatrix);
     }
     
     renderEyeLeft() {
       const { modelViewMatrix } = this;
       this.updateVars();
-      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5*this.eyeHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.eyeWidth/2, this.eyeHeight, this.eyeWidth);
+      let instanceMatrix = m4.translate(modelViewMatrix.value, -this.mouthTopWidth+1, 1, -0.5);     
+      instanceMatrix = m4.scale(instanceMatrix, this.eyeWidth/2, this.eyeWidth, this.eyeWidth/2);
       this.draw(instanceMatrix);
     }
 
     renderEyeRight() {
       const { modelViewMatrix } = this;
       this.updateVars();
-      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5*this.eyeHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.eyeWidth/2, this.eyeHeight, this.eyeWidth);
+      let instanceMatrix = m4.translate(modelViewMatrix.value, this.mouthTopWidth-1, 1, -0.5);     
+      instanceMatrix = m4.scale(instanceMatrix, this.eyeWidth/2, this.eyeWidth, this.eyeWidth/2);
       this.draw(instanceMatrix);
     }
     
@@ -456,7 +507,7 @@ export default class Crocodile extends Model {
       const { modelViewMatrix } = this;
       this.updateVars();
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.mouthBtnHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.mouthBtnWidth, this.mouthBtnHeight, this.mouthBtnWidth);
+      instanceMatrix = m4.scale(instanceMatrix, this.mouthWidth, this.mouthBtnHeight, this.mouthBtnWidth);
       this.draw(instanceMatrix);
     }
 
@@ -472,15 +523,15 @@ export default class Crocodile extends Model {
       const { modelViewMatrix } = this;
       this.updateVars();
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperArmHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.upperArmWidth, this.upperArmHeight, this.upperArmWidth);
+      instanceMatrix = m4.scale(instanceMatrix, this.upperArmWidth, this.upperArmHeight, this.upperArmWidth+0.5);
       this.draw(instanceMatrix);
     }
 
     renderRightUpperArm() {
       const { modelViewMatrix } = this;
       this.updateVars();
-      let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperArmHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.upperArmWidth, this.upperArmHeight, this.upperArmWidth);
+      let instanceMatrix = m4.translate(modelViewMatrix.value, 0, 0.5 * this.upperArmHeight, 0);     
+      instanceMatrix = m4.scale(instanceMatrix, this.upperArmWidth, this.upperArmHeight, this.upperArmWidth+0.5);
       this.draw(instanceMatrix);
     }
 
@@ -489,7 +540,7 @@ export default class Crocodile extends Model {
       const { modelViewMatrix } = this;
       this.updateVars();
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperLegHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.upperLegWidth, this.upperLegHeight, this.upperLegWidth);
+      instanceMatrix = m4.scale(instanceMatrix, this.upperLegWidth, this.upperLegHeight, this.upperLegWidth+0.5);
       this.draw(instanceMatrix);
     }
     
@@ -497,7 +548,7 @@ export default class Crocodile extends Model {
       const { modelViewMatrix } = this;
       this.updateVars();
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperLegHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.upperLegWidth, this.upperLegHeight, this.upperLegWidth);
+      instanceMatrix = m4.scale(instanceMatrix, this.upperLegWidth, this.upperLegHeight, this.upperLegWidth+0.5);
       this.draw(instanceMatrix);
     }
     
@@ -505,7 +556,7 @@ export default class Crocodile extends Model {
       const { modelViewMatrix } = this;
       this.updateVars();
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.lowerArmHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.lowerArmWidth, this.lowerArmHeight, this.lowerArmWidth);
+      instanceMatrix = m4.scale(instanceMatrix, this.lowerArmHeight, this.lowerArmHeight, this.lowerArmWidth);
       this.draw(instanceMatrix);
     }
     
@@ -513,7 +564,7 @@ export default class Crocodile extends Model {
       const { modelViewMatrix } = this;
       this.updateVars();
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.lowerArmHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.lowerArmWidth, this.lowerArmHeight, this.lowerArmWidth);
+      instanceMatrix = m4.scale(instanceMatrix, this.lowerArmHeight, this.lowerArmHeight, this.lowerArmWidth);
       this.draw(instanceMatrix);
     }
 
@@ -522,7 +573,7 @@ export default class Crocodile extends Model {
       const { modelViewMatrix } = this;
       this.updateVars();
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.lowerLegHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.lowerLegWidth, this.lowerLegHeight, this.lowerLegWidth);
+      instanceMatrix = m4.scale(instanceMatrix, this.lowerLegHeight, this.lowerLegHeight, this.lowerLegWidth);
       this.draw(instanceMatrix);
     }
     
@@ -530,7 +581,7 @@ export default class Crocodile extends Model {
       const { modelViewMatrix } = this;
       this.updateVars();
       let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.lowerLegHeight, 0.0);     
-      instanceMatrix = m4.scale(instanceMatrix, this.lowerLegWidth, this.lowerLegHeight, this.lowerLegWidth);
+      instanceMatrix = m4.scale(instanceMatrix, this.lowerLegHeight, this.lowerLegHeight, this.lowerLegWidth);
       this.draw(instanceMatrix);
     }
 
@@ -628,7 +679,7 @@ export default class Crocodile extends Model {
       this.vColor.value.push(...this.colorsSet.slice(0, 4));
       this.vColor.value.push(...this.colorsSet.slice(12, 16));
     
-      this.createTexture();
+      // this.createTexture();
     }
     
 
