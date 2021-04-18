@@ -10,6 +10,7 @@ export default class Model {
     this.stack = [];
     this.components = [];
 
+    this.baseTranslation = [ 0, 0, 0 ];
   }
 
   init(){ /* TODO: Implement as your model */ }
@@ -22,42 +23,52 @@ export default class Model {
 
   setProjectionMatrix(matrixArr){ /* TODO: Implement as your model */ }
 
+  toggleTextureAndShading(status){ /* TODO: Implement as your model */ }
+
   animate(frame){ /* TODO: Implement your animation given n as frame count */ }
 
-  static createNode(transform, render, sibling, child){
+  static createNode(transform, render, sibling, child, isRoot=false){
     return {
       transform,
       render,
       sibling, 
-      child
+      child,
+      isRoot
     }
   }
 
   traverse(id, modelViewMatrix=this.modelViewMatrix){
     if (id === null || id === undefined) return;
 
-    const { components, stack } = this;
+    const { components, stack, baseTranslation } = this;
 
-    if (components[id] === null || components[id] === undefined) return;
+    const node = components[id];
+
+    if (node === null || node === undefined) return;
 
     // console.log(modelViewMatrix.value);
 
     stack.push(modelViewMatrix.value);
 
+    if(node.isRoot){
+      modelViewMatrix.value = 
+        m4.translate(modelViewMatrix.value, ...baseTranslation);
+    }
+
     modelViewMatrix.value = 
-      m4.multiply(modelViewMatrix.value, components[id].transform);
+      m4.multiply(modelViewMatrix.value, node.transform);
 
     // console.log(modelViewMatrix.value);
 
-    components[id].render();
+    node.render();
 
-    if (components[id].child != null) 
-      this.traverse(components[id].child);
+    if (node.child != null) 
+      this.traverse(node.child);
 
     modelViewMatrix.value = stack.pop();
 
-    if (components[id].sibling != null) 
-      this.traverse(components[id].sibling);
+    if (node.sibling != null) 
+      this.traverse(node.sibling);
 
   }
 

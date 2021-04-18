@@ -330,7 +330,8 @@ export default class Zebra extends Model {
           m, 
           () => this.renderTorso(), 
           null, 
-          this.NECK_ID
+          this.NECK_ID,
+          true
         );
   }
 
