@@ -6,6 +6,7 @@ import angle from "../../utils/angle-utils.js";
 
 import { createProgram } from "../../utils/webgl-utils.js";
 
+import { defaultVS, crocodileVS } from "../../shaders/vertex.js";
 
 import { defaultFS, crocodileFS } from "../../shaders/fragment.js";
 

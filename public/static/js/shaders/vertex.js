@@ -70,4 +70,4 @@ void main()
    
 }
 `;
-export { defaultVS, horseVS, crocodileVS  };
+export { defaultVS, zebraVS, crocodileVS  };
