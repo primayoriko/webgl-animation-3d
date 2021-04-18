@@ -34,4 +34,15 @@ void main()
 }
 `;
 
-export { defaultFS, zebraFS };
+const crocodileFS = `
+in vec3 R;
+uniform samplerCube texMap;
+
+void main()
+{
+    vec4 texColor = textureCube(texMap, R); // look up texture map using R
+    gl_FragColor = texColor;
+}
+`;
+
+export { defaultFS, zebraFS, crocodileFS };

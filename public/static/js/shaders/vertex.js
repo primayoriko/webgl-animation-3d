@@ -49,4 +49,19 @@ void main()
 }
 `;
 
-export { defaultVS, zebraVS };
+const crocodileFS = `
+out vec3 R;
+in vec4 vPosition;
+in vec4 Normal;
+uniform mat4 ModelView;
+uniform mat4 Projection;
+
+void main() {
+  gl_Position = Projection * ModelView * vPosition;
+  vec4 eyePos = vPosition;
+  vec4 NN = ModelView * Normal;
+  vec3 N =normalize(NN.xyz);
+  R = reflect(eyePos.xyz, N); 
+}
+`;
+export { defaultVS, zebraVS, crocodileFS  };
