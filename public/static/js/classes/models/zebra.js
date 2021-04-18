@@ -96,10 +96,9 @@ export default class Zebra extends Model {
 
     this.imageTexture = image;
 
-    this.TEXTURE_PATH = "./static/img/zebra-skin.jpg";
-    // this.TEXTURE_PATH = "./static/img/cubetexture.png";
-
     this.texture = this.gl.createTexture();
+
+    this.baseTranslation = [-25, 8, 5];
 
     // Components ID
     this.TORSO_ID = 0;
@@ -216,6 +215,12 @@ export default class Zebra extends Model {
     this.projectionMatrix.value = matrixArr;
     this.gl.useProgram(this.program);
     this.updateUniform(this.projectionMatrix);
+  }
+
+  toggleTextureAndShading(status) {
+    this.enableTextureAndShading = status;
+    this.updateUniform(this.enableTextureAndShading);
+
   }
 
   setImageTexture(image){
