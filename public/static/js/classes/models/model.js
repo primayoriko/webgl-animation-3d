@@ -22,7 +22,7 @@ export default class Model {
 
   setProjectionMatrix(matrixArr){ /* TODO: Implement as your model */ }
 
-  changeState(){ /* TODO: Implement as your model and as a time-variate function */ }
+  animate(frame){ /* TODO: Implement your animation given n as frame count */ }
 
   static createNode(transform, render, sibling, child){
     return {
