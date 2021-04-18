@@ -1,22 +1,17 @@
 import Model from "./model.js";
-
 import m4 from "../../utils/m4-utils.js";
-
+import vector from "../../utils/vector-utils.js";
 import angle from "../../utils/angle-utils.js";
-
 import { createProgram } from "../../utils/webgl-utils.js";
-
 import { defaultVS, crocodileVS } from "../../shaders/vertex.js";
-
 import { defaultFS, crocodileFS } from "../../shaders/fragment.js";
-
 export default class Crocodile extends Model {
 
     // CONSTRUCTOR
     constructor(canvas, gl){
       super(canvas, gl);
 
-      this.program = createProgram(this.gl, defaultVS, defaultFS);
+      this.program = createProgram(this.gl, crocodileVS, crocodileFS);
   
       this.modelViewMatrix = {
         scope: "uniform",
@@ -139,7 +134,7 @@ export default class Crocodile extends Model {
       ];
 
       this.colorsSet = [
-          0.46, 0.7, 0.0, 1,
+          0.46, 0.7, 0.8, 1,
           0.2, 0.3, 0.0, 1.0, 
           0.2, 0.3, 0.0, 1.0, 
           0.2, 0.3, 0.0, 1.0 
@@ -147,6 +142,7 @@ export default class Crocodile extends Model {
       
       this.init();
     }
+
     createTexture(){
       // Create a texture.
       var red = new Uint8Array([255, 0, 0, 255]);
@@ -157,6 +153,7 @@ export default class Crocodile extends Model {
       var yellow = new Uint8Array([255, 255, 0, 255]);
 
       var cubeMap;
+      const { gl, texture, sampler2D, imageTexture } = this;
 
       cubeMap = gl.createTexture();
 
@@ -178,7 +175,7 @@ export default class Crocodile extends Model {
       gl.texParameteri(gl.TEXTURE_CUBE_MAP,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
       gl.texParameteri(gl.TEXTURE_CUBE_MAP,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
 
-      
+    
     }
 
 
@@ -544,9 +541,10 @@ export default class Crocodile extends Model {
       // this.vNormal.value.push(normal);
 
 
-      // var t1 = Math.subtract(this.verticesSet.slice(b, b+4), this.verticesSet.slice(a, a+4));
-      // var t2 = Math.subtract(this.verticesSet.slice(c, c+4), this.verticesSet.slice(a, a+4));
-      // var normal = Math.cross(t1, t2);
+      var t1 = vector.subtract(this.verticesSet.slice(b, b+4), this.verticesSet.slice(a, a+4));
+      var t2 = vector.subtract(this.verticesSet.slice(c, c+4), this.verticesSet.slice(a, a+4));
+      var normal = vector.multiply(t1, t2);
+      this.vNormal.value.push(normal);
 
 
   
@@ -559,6 +557,46 @@ export default class Crocodile extends Model {
     }
 
     initShape() {
+      
+      // this.vNormal.value = [
+      //   // Front
+      //   0.0,  0.0,  1.0,
+      //   0.0,  0.0,  1.0,
+      //   0.0,  0.0,  1.0,
+      //   0.0,  0.0,  1.0,
+  
+      //   // Back
+      //   0.0,  0.0, -1.0,
+      //   0.0,  0.0, -1.0,
+      //   0.0,  0.0, -1.0,
+      //   0.0,  0.0, -1.0,
+  
+      //   // Top
+      //   0.0,  1.0,  0.0,
+      //   0.0,  1.0,  0.0,
+      //   0.0,  1.0,  0.0,
+      //   0.0,  1.0,  0.0,
+  
+      //   // Bottom
+      //   0.0, -1.0,  0.0,
+      //   0.0, -1.0,  0.0,
+      //   0.0, -1.0,  0.0,
+      //   0.0, -1.0,  0.0,
+  
+      //   // Right
+      //   1.0,  0.0,  0.0,
+      //   1.0,  0.0,  0.0,
+      //   1.0,  0.0,  0.0,
+      //   1.0,  0.0,  0.0,
+    
+      //   // Left
+      //   -1.0,  0.0,  0.0,
+      //   -1.0,  0.0,  0.0,
+      //   -1.0,  0.0,  0.0,
+      //   -1.0,  0.0,  0.0
+      // ];
+      
+  
       this.makeQuadSurface(1, 0, 3, 2);
       this.vColor.value.push(...this.colorsSet.slice(12, 16));
       this.vColor.value.push(...this.colorsSet.slice(12, 16));
@@ -589,6 +627,9 @@ export default class Crocodile extends Model {
       this.vColor.value.push(...this.colorsSet.slice(12, 16));
       this.vColor.value.push(...this.colorsSet.slice(0, 4));
       this.vColor.value.push(...this.colorsSet.slice(12, 16));
+    
+      this.createTexture();
     }
+    
 
 }

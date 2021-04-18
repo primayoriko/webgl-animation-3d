@@ -12,8 +12,8 @@ function main(){
 
     // TODO: Inisiasi + tambah model lain
 
-    app.addModel(new Zebra(canvas, gl, document.getElementById("texImage")));
-    // app.addModel(new Crocodile(canvas, gl));
+    // app.addModel(new Zebra(canvas, gl, document.getElementById("texImage")));
+    app.addModel(new Crocodile(canvas, gl));
 
     app.setCamera("orthographic", [-40.0, 40.0, -23.0, 23.0, -40.0, 40.0]);
 

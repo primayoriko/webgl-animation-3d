@@ -65,6 +65,7 @@ void main()
     vec3 eyePos  = (modelViewMatrix*vPosition).xyz;
 
     vec3 N = normalize(normalMatrix*vNormal.xyz);
+
     
     R = reflect(eyePos, N);
    
