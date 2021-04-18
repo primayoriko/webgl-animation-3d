@@ -1,6 +1,6 @@
 import Application from "./classes/app.js";
 
-import Horse from "./classes/models/horse.js";
+import Zebra from "./classes/models/zebra.js";
 import Crocodile from "./classes/models/crocodile.js";
 import Minecraft from "./classes/models/minecraft.js";
 import Angle from "./utils/angle-utils.js";
@@ -10,13 +10,15 @@ function main() {
 
     const app = new Application(canvas, gl);
 
+    // const zebra = new Zebra(canvas, gl, document.getElementById("texImage"));
+
     // TODO: Inisiasi + tambah model lain
 
-    //   app.addModel(new Horse(canvas, gl));
-    //   app.addModel(new Crocodile(canvas, gl));
+    app.addModel(new Zebra(canvas, gl, document.getElementById("texImage")));
+    app.addModel(new Crocodile(canvas, gl));
     app.addModel(new Minecraft(canvas, gl));
 
-      app.setCamera("orthographic", [-40.0, 40.0, -23.0, 23.0, -40.0, 40.0]);
+    app.setCamera("orthographic", [-40.0, 40.0, -23.0, 23.0, -40.0, 40.0]);
     // let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     // let fov = 130;
     // let zNear = 1;

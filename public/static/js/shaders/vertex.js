@@ -16,7 +16,7 @@ void main()
 }
 `;
 
-const horseVS = `
+const zebraVS = `
 uniform mat4 uNormalMatrix;
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
@@ -49,19 +49,26 @@ void main()
 }
 `;
 
-const crocodileFS = `
-out vec3 R;
-in vec4 vPosition;
-in vec4 Normal;
-uniform mat4 ModelView;
-uniform mat4 Projection;
+const crocodileVS = `
+varying vec3 R;
+attribute vec4 vPosition;
+attribute vec4 vNormal;
 
-void main() {
-  gl_Position = Projection * ModelView * vPosition;
-  vec4 eyePos = vPosition;
-  vec4 NN = ModelView * Normal;
-  vec3 N =normalize(NN.xyz);
-  R = reflect(eyePos.xyz, N); 
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform mat3 normalMatrix;
+
+void main()
+{
+    gl_Position = projectionMatrix*modelViewMatrix*vPosition;
+     
+    vec3 eyePos  = (modelViewMatrix*vPosition).xyz;
+
+    vec3 N = normalize(normalMatrix*vNormal.xyz);
+
+    
+    R = reflect(eyePos, N);
+   
 }
 `;
-export { defaultVS, horseVS, crocodileFS  };
+export { defaultVS, zebraVS, crocodileVS  };

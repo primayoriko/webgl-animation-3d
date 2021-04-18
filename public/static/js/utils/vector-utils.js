@@ -9,6 +9,16 @@ const vector = {
             z: x1 * y2 - x2 * y1
         };
     },
+    subtract: (
+        x1, y1, z1,
+        x2, y2, z2,
+    ) => {
+        return {
+            x: x1-x2,
+            y: y1-y2,
+            z: z1-z2
+        };
+    },
     normal: (
         x1, y1, z1,
         x2, y2, z2,
