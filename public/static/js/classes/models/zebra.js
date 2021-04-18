@@ -6,16 +6,16 @@ import angle from "../../utils/angle-utils.js";
 
 import { createProgram } from "../../utils/webgl-utils.js";
 
-import { horseVS } from "../../shaders/vertex.js";
+import { zebraVS } from "../../shaders/vertex.js";
 
-import { horseFS } from "../../shaders/fragment.js";
+import { zebraFS } from "../../shaders/fragment.js";
 
 import Model from "./model.js";
-export default class Horse extends Model {
-  constructor(canvas, gl){
+export default class Zebra extends Model {
+  constructor(canvas, gl, image=document.getElementById("texImage")){
     super(canvas, gl);
 
-    this.program = createProgram(this.gl, horseVS, horseFS);
+    this.program = createProgram(this.gl, zebraVS, zebraFS);
 
     this.modelViewMatrix = {
       scope: "uniform",
@@ -94,9 +94,12 @@ export default class Horse extends Model {
 
     this.currentFrameIndex = 1;
 
-    this.TEXTURE_PATH = "./static/img/zebra-skin.jpg";
+    this.imageTexture = image;
 
-    this.texture = null;
+    this.TEXTURE_PATH = "./static/img/zebra-skin.jpg";
+    // this.TEXTURE_PATH = "./static/img/cubetexture.png";
+
+    this.texture = this.gl.createTexture();
 
     // Components ID
     this.TORSO_ID = 0;
@@ -119,25 +122,56 @@ export default class Horse extends Model {
     // Components Orientation
     this.anglesSet = [90, 120, 90, 70, 10, 80, 10, 90, 40, 70, 30, 0, -90, 0, 0];
 
-    // Components Size
-    this.torsoHeight = 10.0;
-    this.torsoWidth = 3.0;
-    this.upperArmHeight = 5.0;
-    this.lowerArmHeight = 2.0;
-    this.upperArmWidth = 1.3;
-    this.lowerArmWidth = 0.8;
-    this.upperLegWidth = 1.3;
-    this.lowerLegWidth = 0.8;
-    this.lowerLegHeight = 2.0;
-    this.upperLegHeight = 5.0;
-    this.headHeight = 3.5;
-    this.headWidth = 1.5;
-    this.neckHeight = 4.0;
-    this.neckWidth = 2.0;
+    this.componentScale = 1;
 
-    this.numNodes = 11;
-    this.numAngles = 11;
-    this.numVertices = 24;
+    // Components Size
+    this.torsoHeight = 10.0 * this.componentScale;
+    this.torsoWidth = 3.0 * this.componentScale;
+    this.upperArmHeight = 5.0 * this.componentScale;
+    this.lowerArmHeight = 2.0 * this.componentScale;
+    this.upperArmWidth = 1.3 * this.componentScale;
+    this.lowerArmWidth = 0.8 * this.componentScale;
+    this.upperLegWidth = 1.3 * this.componentScale;
+    this.lowerLegWidth = 0.8 * this.componentScale;
+    this.lowerLegHeight = 2.0 * this.componentScale;
+    this.upperLegHeight = 5.0 * this.componentScale;
+    this.headHeight = 3.5 * this.componentScale;
+    this.headWidth = 1.5 * this.componentScale;
+    this.neckHeight = 4.0 * this.componentScale;
+    this.neckWidth = 2.0 * this.componentScale;
+
+    // this.numNodes = 11;
+    // this.numAngles = 11;
+    // this.numVertices = 24;
+
+    // this.texCoord = [
+    //   [0, 0],
+    //   [0, 1],
+    //   [1, 1],
+    //   [1, 0]
+    // ];
+    
+    // this.vertices = [
+    //   [-0.5, -0.5,  0.5, 1.0 ],
+    //   [-0.5,  0.5,  0.5, 1.0 ],
+    //   [0.5,  0.5,  0.5, 1.0 ],
+    //   [0.5, -0.5,  0.5, 1.0 ],
+    //   [-0.5, -0.5, -0.5, 1.0 ],
+    //   [-0.5,  0.5, -0.5, 1.0 ],
+    //   [0.5,  0.5, -0.5, 1.0 ],
+    //   [0.5, -0.5, -0.5, 1.0 ]
+    // ];
+    
+    // this.vertexColors = [
+    //   [0.0, 0.0, 0.0, 1.0 ],  // black
+    //   [1.0, 0.0, 0.0, 1.0 ],  // red
+    //   [1.0, 1.0, 0.0, 1.0 ],  // yellow
+    //   [0.0, 1.0, 0.0, 1.0 ],  // green
+    //   [0.0, 0.0, 1.0, 1.0 ],  // blue
+    //   [1.0, 0.0, 1.0, 1.0 ],  // magenta
+    //   [0.0, 1.0, 1.0, 1.0 ],  // white
+    //   [0.0, 1.0, 1.0, 1.0 ]  // cyan
+    // ];
 
     this.init();
   }
@@ -145,9 +179,10 @@ export default class Horse extends Model {
   init(){
     this.initBaseShape();
 
-    this.updateVars();
+    // this.loadTexture();
+    // this.configureTexture();
 
-    this.loadTexture();
+    this.updateVars();
 
     this.initTorso();
     this.initNeck();
@@ -159,7 +194,6 @@ export default class Horse extends Model {
     this.updateVars();
 
     this.traverse(this.TORSO_ID);
-
   }
 
   updateVars() {
@@ -173,7 +207,9 @@ export default class Horse extends Model {
     this.updateBuffer(this.vPosition);
     this.updateBuffer(this.vColor);
     this.updateBuffer(this.vIndex);
+    this.updateBuffer(this.vTextureCoord);
 
+    this.loadTexture();
   }
 
   setProjectionMatrix(matrixArr){ 
@@ -182,16 +218,18 @@ export default class Horse extends Model {
     this.updateUniform(this.projectionMatrix);
   }
 
+  setImageTexture(image){
+    this.imageTexture = image;
+
+  }
+
   loadTexture() {
     const isPowerOf2 = (value) => {
       return (value & (value - 1)) == 0;
     }
 
-    const { gl } = this;
-    const texture = gl.createTexture();
+    const { gl, texture, sampler2D, imageTexture } = this;
 
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-  
     const level = 0;
     const internalFormat = gl.RGBA;
     const width = 1;
@@ -199,31 +237,63 @@ export default class Horse extends Model {
     const border = 0;
     const srcFormat = gl.RGBA;
     const srcType = gl.UNSIGNED_BYTE;
-    const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+    const pixel = new Uint8Array([50, 100, 255, 255]);  // opaque blue
+
+    gl.bindTexture(gl.TEXTURE_2D, texture);
 
     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                   width, height, border, srcFormat, srcType,
                   pixel);
-  
-    const image = new Image();
 
-    image.onload = () => {
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-                    srcFormat, srcType, image);
-  
-      if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-        gl.generateMipmap(gl.TEXTURE_2D);
-      } else {
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      }
-    };
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                  srcFormat, srcType, imageTexture);
 
-    image.src = this.TEXTURE_PATH;
+    if (isPowerOf2(imageTexture.width) && isPowerOf2(imageTexture.height)) {
+      gl.generateMipmap(gl.TEXTURE_2D);
+
+    } else {
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    }
+
+    gl.activeTexture(gl.TEXTURE0);
+
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    gl.uniform1i(sampler2D.location, 0);
   
-    this.texture = texture;
+  }
+
+  generateTexture(){
+    const { gl, program, sampler2D } = this;
+    const image = document.getElementById("texImage");
+    console.log(image);
+
+    function load(){
+      const texture = gl.createTexture();
+      gl.bindTexture( gl.TEXTURE_2D, texture );
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGB,
+          gl.RGB, gl.UNSIGNED_BYTE, image );
+      gl.generateMipmap( gl.TEXTURE_2D );
+      gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER,
+                        gl.NEAREST_MIPMAP_LINEAR );
+      gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
+
+      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+      gl.uniform1i(sampler2D.location, 0);
+      // gl.uniform1i(gl.getUniformLocation(program, "uSampler"), 0);
+
+    }
+
+    // image.onload = load;
+
+    load();
   }
 
   draw(instanceMatrix){
@@ -237,15 +307,12 @@ export default class Horse extends Model {
     this.updateUniform(modelViewMatrix);
     this.updateUniform(normalMatrix);
 
+    // this.loadTexture();
+    // this.generateTexture();
+
     const vertexCount = 36;
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
-
-    gl.activeTexture(gl.TEXTURE0);
-
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-
-    gl.uniform1i(sampler2D.location, 0);
 
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     // for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
@@ -312,6 +379,7 @@ export default class Horse extends Model {
     let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.torsoHeight, 0.0);
     
     instanceMatrix = m4.scale(instanceMatrix, this.torsoWidth, this.torsoHeight, this.torsoWidth);
+    // instanceMatrix = m4.scale(instanceMatrix, this.torsoHeight, this.torsoHeight, this.torsoHeight/2);
 
     this.draw(instanceMatrix);
   }
@@ -592,4 +660,43 @@ export default class Horse extends Model {
     ];
 
   }
+
+  // quad(a, b, c, d) {
+  //   const { vColor, vPosition, vTextureCoord,
+  //       vertices, vertexColors, texCoord } = this;
+
+  //   vPosition.value.push(...vertices[a]);
+  //   vColor.value.push(...vertexColors[a]);
+  //   vTextureCoord.value.push(...texCoord[0]);
+
+  //   vPosition.value.push(...vertices[b]);
+  //   vColor.value.push(...vertexColors[a]);
+  //   vTextureCoord.value.push(...texCoord[1]);
+
+  //   vPosition.value.push(...vertices[c]);
+  //   vColor.value.push(...vertexColors[a]);
+  //   vTextureCoord.value.push(...texCoord[2]);
+
+  //   vPosition.value.push(...vertices[a]);
+  //   vColor.value.push(...vertexColors[a]);
+  //   vTextureCoord.value.push(...texCoord[0]);
+
+  //   vPosition.value.push(...vertices[c]);
+  //   vColor.value.push(...vertexColors[a]);
+  //   vTextureCoord.value.push(...texCoord[2]);
+
+  //   vPosition.value.push(...vertices[d]);
+  //   vColor.value.push(...vertexColors[a]);
+  //   vTextureCoord.value.push(...texCoord[3]);
+  // }
+
+
+  // initShape(){
+  //   this.quad( 1, 0, 3, 2 );
+  //   this.quad( 2, 3, 7, 6 );
+  //   this.quad( 3, 0, 4, 7 );
+  //   this.quad( 6, 5, 1, 2 );
+  //   this.quad( 4, 5, 6, 7 );
+  //   this.quad( 5, 4, 0, 1 );
+  // }
 }

@@ -10,7 +10,7 @@ void main()
 }
 `;
 
-const horseFS = `
+const zebraFS = `
 precision highp float;
 
 uniform sampler2D uSampler;
@@ -34,4 +34,4 @@ void main()
 }
 `;
 
-export { defaultFS, horseFS };
+export { defaultFS, zebraFS };
