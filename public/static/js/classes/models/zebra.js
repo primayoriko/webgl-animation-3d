@@ -96,10 +96,9 @@ export default class Zebra extends Model {
 
     this.imageTexture = image;
 
-    this.TEXTURE_PATH = "./static/img/zebra-skin.jpg";
-    // this.TEXTURE_PATH = "./static/img/cubetexture.png";
-
     this.texture = this.gl.createTexture();
+
+    this.baseTranslation = [-25, 8, 5];
 
     // Components ID
     this.TORSO_ID = 0;
@@ -218,6 +217,12 @@ export default class Zebra extends Model {
     this.updateUniform(this.projectionMatrix);
   }
 
+  toggleTextureAndShading(status) {
+    this.enableTextureAndShading = status;
+    this.updateUniform(this.enableTextureAndShading);
+
+  }
+
   setImageTexture(image){
     this.imageTexture = image;
 
@@ -330,7 +335,8 @@ export default class Zebra extends Model {
           m, 
           () => this.renderTorso(), 
           null, 
-          this.NECK_ID
+          this.NECK_ID,
+          true
         );
   }
 

@@ -60,14 +60,14 @@ export default class Minecraft extends Model {
             { x: 0, y: 90, z: -90 },
             { x: 0, y: 0, z: -30 },
             { x: 0, y: -90 }, { x: 0, y: 90 },
-            { x: 0, y: -90 }, { x: 0, y: 90 },
+            { x: 0, y: 90 }, { x: 0, y: -90 },
         ];
 
         this.speed = {
             head: 1.5,
             torso: 0.5,
             arm: 5,
-            leg: 5
+            leg: -5
         }
 
         this.theta = [90, 0, 0, 0, 0, 0, 110, -20, 110, -20, 110, -20, 110, -20, -90, 0, 0];
@@ -153,9 +153,9 @@ export default class Minecraft extends Model {
         this.initArmLeft()
         this.anglesSet[this.ARM_RIGHT]['y'] = this.anglesSet[this.ARM_RIGHT]['y'] + this.speed.arm * -1
         this.initArmRight()
-        this.anglesSet[this.LEG_LEFT]['y'] = this.anglesSet[this.LEG_LEFT]['y'] + this.speed.arm
+        this.anglesSet[this.LEG_LEFT]['y'] = this.anglesSet[this.LEG_LEFT]['y'] + this.speed.leg
         this.initLegLeft()
-        this.anglesSet[this.LEG_RIGHT]['y'] = this.anglesSet[this.LEG_RIGHT]['y'] + this.speed.arm * -1
+        this.anglesSet[this.LEG_RIGHT]['y'] = this.anglesSet[this.LEG_RIGHT]['y'] + this.speed.leg * -1
         this.initLegRight()
         if (frame % 36 == 0) {
             this.speed.head *= -1
