@@ -6,9 +6,8 @@ import angle from "../../utils/angle-utils.js";
 
 import { createProgram } from "../../utils/webgl-utils.js";
 
-import { defaultVS } from "../../shaders/vertex.js";
 
-import { defaultFS } from "../../shaders/fragment.js";
+import { defaultFS, crocodileFS } from "../../shaders/fragment.js";
 
 export default class Crocodile extends Model {
 
@@ -47,6 +46,13 @@ export default class Crocodile extends Model {
         value: [],
         buffer: gl.createBuffer(),
         size: 4,
+      };
+      this.vNormal = {
+        scope: "attribute",
+        location: gl.getAttribLocation(this.program, "aVertexNormal"),
+        value: [],
+        buffer: gl.createBuffer(),
+        size: 3,
       };
 
       this.TORSO_ID = 0;
@@ -140,6 +146,40 @@ export default class Crocodile extends Model {
       
       this.init();
     }
+    createTexture(){
+      // Create a texture.
+      var red = new Uint8Array([255, 0, 0, 255]);
+      var green = new Uint8Array([0, 255, 0, 255]);
+      var blue = new Uint8Array([0, 0, 255, 255]);
+      var cyan = new Uint8Array([0, 255, 255, 255]);
+      var magenta = new Uint8Array([255, 0, 255, 255]);
+      var yellow = new Uint8Array([255, 255, 0, 255]);
+
+      var cubeMap;
+
+      cubeMap = gl.createTexture();
+
+      gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubeMap);
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X ,0,gl.RGBA,
+         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, red);
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X ,0,gl.RGBA,
+         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, green);
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y ,0,gl.RGBA,
+         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, blue);
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y ,0,gl.RGBA,
+         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, cyan);
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z ,0,gl.RGBA,
+         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, yellow);
+      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z ,0,gl.RGBA,
+         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, magenta);
+  
+  
+      gl.texParameteri(gl.TEXTURE_CUBE_MAP,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_CUBE_MAP,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+
+      
+    }
+
 
     // IMPORTANT FUNCTION
 
@@ -499,6 +539,15 @@ export default class Crocodile extends Model {
     makeQuadSurface(a, b, c, d) {
       a *= 4; b *= 4; c *= 4; d *= 4;
       // console.log(this.vPosition.value);
+      // let normal = normalize(cross(this.verticesSet.slice(b, b+4)-this.verticesSet.slice(a, a+4) , this.verticesSet.slice(c, c+4)-this.verticesSet.slice(b, b+4) ));
+      // this.vNormal.value.push(normal);
+
+
+      // var t1 = Math.subtract(this.verticesSet.slice(b, b+4), this.verticesSet.slice(a, a+4));
+      // var t2 = Math.subtract(this.verticesSet.slice(c, c+4), this.verticesSet.slice(a, a+4));
+      // var normal = Math.cross(t1, t2);
+
+
   
       this.vPosition.value.push(...this.verticesSet.slice(a, a+4));
       this.vPosition.value.push(...this.verticesSet.slice(b, b+4));
