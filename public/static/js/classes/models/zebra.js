@@ -108,8 +108,6 @@ export default class Zebra extends Model {
     this.RIGHT_BACK_LEG_ID = 6;
     this.HEAD2_ID = 7;
     this.GLOBAL_ANGLE_ID = 8;
-    // this.GLOBAL_X_COORDINATE = 13;
-    // this.GLOBAL_Y_COORDINATE = 14;
 
     // Components Orientation
     this.anglesSet = [90, 120, 90, 70, 10, 80, 10, 90, 40, 70, 30, 0, -90, 0, 0];
@@ -133,13 +131,9 @@ export default class Zebra extends Model {
       head: 1.5,
       neck: 1.5,
       torso: 0.5,
-      // arm: 5,
-      leg: 5
+      frontLeg: 3,
+      backLeg: 3
     }
-
-    // this.numNodes = 11;
-    // this.numAngles = 11;
-    // this.numVertices = 24;
 
     // this.texCoord = [
     //   [0, 0],
@@ -301,25 +295,29 @@ export default class Zebra extends Model {
   }
 
   animate(frame) {
-    // this.anglesSet[this.TORSO_ID]['y'] = this.anglesSet[this.TORSO_ID]['y'] + this.speed.torso
-    // this.anglesSet[this.TORSO_ID]['x'] = this.anglesSet[this.TORSO_ID]['x'] + this.speed.torso
-    // // this.anglesSet[this.TORSO_ID]['z'] = this.anglesSet[this.TORSO_ID]['z'] + this.speed.torso * -1
-    // this.initTorso()
-    // this.anglesSet[this.HEAD]['z'] = this.anglesSet[this.HEAD]['z'] + this.speed.head
-    // this.initHead()
-    // this.anglesSet[this.ARM_LEFT]['y'] = this.anglesSet[this.ARM_LEFT]['y'] + this.speed.arm
-    // this.initArmLeft()
-    // this.anglesSet[this.ARM_RIGHT]['y'] = this.anglesSet[this.ARM_RIGHT]['y'] + this.speed.arm * -1
-    // this.initArmRight()
-    // this.anglesSet[this.LEG_LEFT]['y'] = this.anglesSet[this.LEG_LEFT]['y'] + this.speed.leg
-    // this.initLegLeft()
-    // this.anglesSet[this.LEG_RIGHT]['y'] = this.anglesSet[this.LEG_RIGHT]['y'] + this.speed.leg * -1
-    // this.initLegRight()
-    // if (frame % 36 == 0) {
-    //     this.speed.head *= -1
-    //     this.speed.arm *= -1
-    //     this.speed.leg *= -1
-    // }
+    const { speed, anglesSet } = this;
+
+    anglesSet[this.TORSO_ID] = anglesSet[this.TORSO_ID] + speed.torso;
+    this.initTorso();
+    
+    anglesSet[this.NECK_ID] = anglesSet[this.NECK_ID] + speed.neck;
+    this.initNeck();
+
+    anglesSet[this.RIGHT_FRONT_LEG_ID] = anglesSet[this.RIGHT_FRONT_LEG_ID] + speed.frontLeg;
+    anglesSet[this.LEFT_FRONT_LEG_ID] = anglesSet[this.LEFT_FRONT_LEG_ID] + speed.frontLeg * -1;
+    this.initRightFrontLeg();
+    this.initLeftFrontLeg();
+
+    anglesSet[this.RIGHT_BACK_LEG_ID] = anglesSet[this.RIGHT_BACK_LEG_ID] + speed.backLeg;
+    anglesSet[this.LEFT_BACK_LEG_ID] = anglesSet[this.LEFT_BACK_LEG_ID] + speed.backLeg * -1;
+    this.initRightBackLeg();
+    this.initLeftBackLeg();
+
+    if (frame % 36 == 0) {
+        speed.neck *= -1
+        speed.frontLeg *= -1
+        speed.backLeg *= -1
+    }
   }
 
   draw(instanceMatrix){
