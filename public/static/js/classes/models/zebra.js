@@ -2,8 +2,6 @@ import m4 from "../../utils/m4-utils.js";
 
 import angle from "../../utils/angle-utils.js";
 
-// import vector from "../../utils/vector-utils.js";
-
 import { createProgram } from "../../utils/webgl-utils.js";
 
 import { zebraVS } from "../../shaders/vertex.js";
@@ -139,6 +137,14 @@ export default class Zebra extends Model {
     this.neckHeight = 4.0 * this.componentScale;
     this.neckWidth = 2.0 * this.componentScale;
 
+    this.speed = {
+      head: 1.5,
+      neck: 1.5,
+      torso: 0.5,
+      // arm: 5,
+      leg: 5
+  }
+
     // this.numNodes = 11;
     // this.numAngles = 11;
     // this.numVertices = 24;
@@ -186,7 +192,10 @@ export default class Zebra extends Model {
     this.initTorso();
     this.initNeck();
     this.initHead();
-
+    this.initRightFrontLeg();
+    this.initLeftFrontLeg();
+    this.initRightBackLeg();
+    this.initLeftBackLeg();
   }
 
   render(){
@@ -296,9 +305,29 @@ export default class Zebra extends Model {
 
     }
 
-    // image.onload = load;
-
     load();
+  }
+
+  animate(frame) {
+    // this.anglesSet[this.TORSO_ID]['y'] = this.anglesSet[this.TORSO_ID]['y'] + this.speed.torso
+    // this.anglesSet[this.TORSO_ID]['x'] = this.anglesSet[this.TORSO_ID]['x'] + this.speed.torso
+    // // this.anglesSet[this.TORSO_ID]['z'] = this.anglesSet[this.TORSO_ID]['z'] + this.speed.torso * -1
+    // this.initTorso()
+    // this.anglesSet[this.HEAD]['z'] = this.anglesSet[this.HEAD]['z'] + this.speed.head
+    // this.initHead()
+    // this.anglesSet[this.ARM_LEFT]['y'] = this.anglesSet[this.ARM_LEFT]['y'] + this.speed.arm
+    // this.initArmLeft()
+    // this.anglesSet[this.ARM_RIGHT]['y'] = this.anglesSet[this.ARM_RIGHT]['y'] + this.speed.arm * -1
+    // this.initArmRight()
+    // this.anglesSet[this.LEG_LEFT]['y'] = this.anglesSet[this.LEG_LEFT]['y'] + this.speed.leg
+    // this.initLegLeft()
+    // this.anglesSet[this.LEG_RIGHT]['y'] = this.anglesSet[this.LEG_RIGHT]['y'] + this.speed.leg * -1
+    // this.initLegRight()
+    // if (frame % 36 == 0) {
+    //     this.speed.head *= -1
+    //     this.speed.arm *= -1
+    //     this.speed.leg *= -1
+    // }
   }
 
   draw(instanceMatrix){
@@ -311,9 +340,6 @@ export default class Zebra extends Model {
 
     this.updateUniform(modelViewMatrix);
     this.updateUniform(normalMatrix);
-
-    // this.loadTexture();
-    // this.generateTexture();
 
     const vertexCount = 36;
     const type = gl.UNSIGNED_SHORT;
@@ -350,7 +376,7 @@ export default class Zebra extends Model {
       Model.createNode(
           m, 
           () => this.renderNeck(), 
-          null, // TODO: ganti 
+          this.RIGHT_FRONT_LEG_ID,
           this.HEAD_ID
         );
   }
@@ -368,13 +394,61 @@ export default class Zebra extends Model {
           null
         );
   }
-  
-  initLeftUpperArm() {
 
+  initRightFrontLeg() {
+    let m = m4.translation(this.torsoWidth / 3 + this.upperArmWidth, 0.9 * this.torsoHeight, 0.0);
+    m = m4.rotate(m, angle.degToRad(this.anglesSet[this.RIGHT_FRONT_LEG_ID]), 'x');
+
+    this.components[this.RIGHT_FRONT_LEG_ID] = 
+      Model.createNode(
+          m, 
+          // () => this.renderRightFrontLeg(), 
+          () => this.renderFrontLeg(), 
+          this.LEFT_FRONT_LEG_ID,
+          null
+        );
   }
-  
-  initLeftLowerArm() {
 
+  initLeftFrontLeg() {
+    let m = m4.translation(-(this.torsoWidth / 3 + this.upperArmWidth), 0.9 * this.torsoHeight, 0.0);
+    m = m4.rotate(m, angle.degToRad(this.anglesSet[this.LEFT_FRONT_LEG_ID]), 'x');
+
+    this.components[this.LEFT_FRONT_LEG_ID] = 
+      Model.createNode(
+          m, 
+          // () => this.renderLeftFrontLeg(), 
+          () => this.renderFrontLeg(), 
+          this.RIGHT_BACK_LEG_ID,
+          null
+        );
+  }
+
+  initRightBackLeg() {
+    let m = m4.translation(this.torsoWidth / 3 + this.upperLegWidth, 0.1 * this.upperLegHeight, 0.0);
+    m = m4.rotate(m, angle.degToRad(this.anglesSet[this.RIGHT_BACK_LEG_ID]), 'x');
+
+    this.components[this.RIGHT_BACK_LEG_ID] = 
+      Model.createNode(
+          m, 
+          // () => this.renderRightBackLeg(), 
+          () => this.renderBackLeg(), 
+          this.LEFT_BACK_LEG_ID,
+          null
+        );
+  }
+
+  initLeftBackLeg() {
+    let m = m4.translation(-(this.torsoWidth / 3 + this.upperLegWidth), 0.1 * this.upperLegHeight, 0.0);
+    m = m4.rotate(m, angle.degToRad(this.anglesSet[this.LEFT_BACK_LEG_ID]), 'x');
+
+    this.components[this.LEFT_BACK_LEG_ID] = 
+      Model.createNode(
+          m, 
+          // () => this.renderLeftBackLeg(), 
+          () => this.renderBackLeg(), 
+          null,
+          null
+        );
   }
 
   renderTorso() {
@@ -412,75 +486,27 @@ export default class Zebra extends Model {
     this.draw(instanceMatrix);
   }
   
-  renderLeftUpperArm() {
-    const { gl } = this;
+  renderFrontLeg() {
+    const { modelViewMatrix } = this;
 
-    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.upperArmHeight, 0.0);
+    this.updateVars();
+
+    let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperArmHeight, 0.0);
     instanceMatrix = m4.scale(instanceMatrix, this.upperArmWidth, this.upperArmHeight, this.upperArmWidth);
   
-    this.updateVars();
-
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+    this.draw(instanceMatrix);
   }
-  
-  renderLeftLowerArm() {
-    const { gl } = this;
 
-    let instanceMatrix = m4.translate(this.modelViewMatrix.value, 0.0, 0.5 * this.lowerArmHeight, 0.0);
-    instanceMatrix = m4.scale(instanceMatrix, this.lowerArmWidth, this.lowerArmHeight, this.lowerArmkWidth);
+  renderBackLeg() {
+    const { modelViewMatrix } = this;
 
     this.updateVars();
 
-    for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+    let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperLegHeight, 0.0);
+    instanceMatrix = m4.scale(instanceMatrix, this.upperLegWidth, this.upperLegHeight, this.upperLegWidth);
+  
+    this.draw(instanceMatrix);
   }
-  
-  // rightUpperArm() {
-  
-  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperArmHeight, 0.0));
-  //   instanceMatrix = mult(instanceMatrix, scale4(upperArmWidth, upperArmHeight, upperArmWidth));
-  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  // }
-  
-  // rightLowerArm() {
-  
-  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerArmHeight, 0.0));
-  //   instanceMatrix = mult(instanceMatrix, scale4(lowerArmWidth, lowerArmHeight, lowerArmWidth));
-  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  // }
-  
-  // leftUpperLeg() {
-  
-  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperLegHeight, 0.0));
-  //   instanceMatrix = mult(instanceMatrix, scale4(upperLegWidth, upperLegHeight, upperLegWidth));
-  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  // }
-  
-  // leftLowerLeg() {
-  
-  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerLegHeight, 0.0));
-  //   instanceMatrix = mult(instanceMatrix, scale4(lowerLegWidth, lowerLegHeight, lowerLegWidth));
-  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  // }
-  
-  // rightUpperLeg() {
-  
-  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * upperLegHeight, 0.0));
-  //   instanceMatrix = mult(instanceMatrix, scale4(upperLegWidth, upperLegHeight, upperLegWidth));
-  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  // }
-  
-  // rightLowerLeg() {
-  
-  //   instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * lowerLegHeight, 0.0));
-  //   instanceMatrix = mult(instanceMatrix, scale4(lowerLegWidth, lowerLegHeight, lowerLegWidth))
-  //   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  //   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-  // }
 
   initBaseShape(){
     // this.vPosition.value = [
