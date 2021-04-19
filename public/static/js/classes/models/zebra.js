@@ -120,18 +120,14 @@ export default class Zebra extends Model {
     // Components Size
     this.torsoHeight = 10.0 * this.componentScale;
     this.torsoWidth = 3.0 * this.componentScale;
-    this.upperArmHeight = 5.0 * this.componentScale;
-    this.lowerArmHeight = 2.0 * this.componentScale;
-    this.upperArmWidth = 1.3 * this.componentScale;
-    this.lowerArmWidth = 0.8 * this.componentScale;
-    this.upperLegWidth = 1.3 * this.componentScale;
-    this.lowerLegWidth = 0.8 * this.componentScale;
-    this.lowerLegHeight = 2.0 * this.componentScale;
-    this.upperLegHeight = 5.0 * this.componentScale;
     this.headHeight = 3.5 * this.componentScale;
     this.headWidth = 1.5 * this.componentScale;
     this.neckHeight = 4.0 * this.componentScale;
     this.neckWidth = 2.0 * this.componentScale;
+    this.frontLegHeight = 5.0 * this.componentScale;
+    this.frontLegWidth = 1.3 * this.componentScale;
+    this.backLegWidth = 1.3 * this.componentScale;
+    this.backLegHeight = 5.0 * this.componentScale;
 
     this.speed = {
       head: 1.5,
@@ -139,7 +135,7 @@ export default class Zebra extends Model {
       torso: 0.5,
       // arm: 5,
       leg: 5
-  }
+    }
 
     // this.numNodes = 11;
     // this.numAngles = 11;
@@ -392,7 +388,7 @@ export default class Zebra extends Model {
   }
 
   initRightFrontLeg() {
-    let m = m4.translation(this.torsoWidth / 3 + this.upperArmWidth, 0.9 * this.torsoHeight, 0.0);
+    let m = m4.translation(this.torsoWidth / 3 + this.frontLegWidth, 0.9 * this.torsoHeight, 0.0);
     m = m4.rotate(m, angle.degToRad(this.anglesSet[this.RIGHT_FRONT_LEG_ID]), 'x');
 
     this.components[this.RIGHT_FRONT_LEG_ID] = 
@@ -406,7 +402,7 @@ export default class Zebra extends Model {
   }
 
   initLeftFrontLeg() {
-    let m = m4.translation(-(this.torsoWidth / 3 + this.upperArmWidth), 0.9 * this.torsoHeight, 0.0);
+    let m = m4.translation(-(this.torsoWidth / 3 + this.frontLegWidth), 0.9 * this.torsoHeight, 0.0);
     m = m4.rotate(m, angle.degToRad(this.anglesSet[this.LEFT_FRONT_LEG_ID]), 'x');
 
     this.components[this.LEFT_FRONT_LEG_ID] = 
@@ -420,7 +416,7 @@ export default class Zebra extends Model {
   }
 
   initRightBackLeg() {
-    let m = m4.translation(this.torsoWidth / 3 + this.upperLegWidth, 0.1 * this.upperLegHeight, 0.0);
+    let m = m4.translation(this.torsoWidth / 3 + this.backLegWidth, 0.1 * this.backLegHeight, 0.0);
     m = m4.rotate(m, angle.degToRad(this.anglesSet[this.RIGHT_BACK_LEG_ID]), 'x');
 
     this.components[this.RIGHT_BACK_LEG_ID] = 
@@ -434,7 +430,7 @@ export default class Zebra extends Model {
   }
 
   initLeftBackLeg() {
-    let m = m4.translation(-(this.torsoWidth / 3 + this.upperLegWidth), 0.1 * this.upperLegHeight, 0.0);
+    let m = m4.translation(-(this.torsoWidth / 3 + this.backLegWidth), 0.1 * this.backLegHeight, 0.0);
     m = m4.rotate(m, angle.degToRad(this.anglesSet[this.LEFT_BACK_LEG_ID]), 'x');
 
     this.components[this.LEFT_BACK_LEG_ID] = 
@@ -487,8 +483,8 @@ export default class Zebra extends Model {
 
     this.updateVars();
 
-    let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperArmHeight, 0.0);
-    instanceMatrix = m4.scale(instanceMatrix, this.upperArmWidth, this.upperArmHeight, this.upperArmWidth);
+    let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.frontLegHeight, 0.0);
+    instanceMatrix = m4.scale(instanceMatrix, this.frontLegWidth, this.frontLegHeight, this.frontLegWidth);
   
     this.draw(instanceMatrix);
   }
@@ -498,8 +494,8 @@ export default class Zebra extends Model {
 
     this.updateVars();
 
-    let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.upperLegHeight, 0.0);
-    instanceMatrix = m4.scale(instanceMatrix, this.upperLegWidth, this.upperLegHeight, this.upperLegWidth);
+    let instanceMatrix = m4.translate(modelViewMatrix.value, 0.0, 0.5 * this.backLegHeight, 0.0);
+    instanceMatrix = m4.scale(instanceMatrix, this.backLegWidth, this.backLegHeight, this.backLegWidth);
   
     this.draw(instanceMatrix);
   }
