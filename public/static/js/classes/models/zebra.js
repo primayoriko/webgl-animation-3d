@@ -102,22 +102,18 @@ export default class Zebra extends Model {
     this.TORSO_ID = 0;
     this.NECK_ID = 1;
     this.HEAD_ID = 2;
-    this.HEAD2_ID = 11;
     this.LEFT_FRONT_LEG_ID = 3;
-    this.LEFT_FRONT_FOOT_ID = 4;
-    this.RIGHT_FRONT_LEG_ID = 5;
-    this.RIGHT_FRONT_FOOT_ID = 6;
-    this.LEFT_BACK_LEG_ID = 7;
-    this.LEFT_BACK_FOOT_ID = 8;
-    this.RIGHT_BACK_LEG_ID = 9;
-    this.RIGHT_BACK_FOOT_ID = 10;
-
-    this.GLOBAL_ANGLE_ID = 12;
-    this.GLOBAL_X_COORDINATE = 13;
-    this.GLOBAL_Y_COORDINATE = 14;
+    this.RIGHT_FRONT_LEG_ID = 4;
+    this.LEFT_BACK_LEG_ID = 5;
+    this.RIGHT_BACK_LEG_ID = 6;
+    this.HEAD2_ID = 7;
+    this.GLOBAL_ANGLE_ID = 8;
+    // this.GLOBAL_X_COORDINATE = 13;
+    // this.GLOBAL_Y_COORDINATE = 14;
 
     // Components Orientation
     this.anglesSet = [90, 120, 90, 70, 10, 80, 10, 90, 40, 70, 30, 0, -90, 0, 0];
+    this.anglesSet = [90, 120, 90, 70, 80, 90, 70, 0, -90];
 
     this.componentScale = 1;
 
