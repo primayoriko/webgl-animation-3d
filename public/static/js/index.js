@@ -3,7 +3,7 @@ import Application from "./classes/app.js";
 import Zebra from "./classes/models/zebra.js";
 import Crocodile from "./classes/models/crocodile.js";
 import Minecraft from "./classes/models/minecraft.js";
-import Angle from "./utils/angle-utils.js";
+import angle from "./utils/angle-utils.js";
 
 function main() {
     const { canvas, gl } = init();
@@ -18,18 +18,19 @@ function main() {
     app.addModel(new Crocodile(canvas, gl));
     app.addModel(new Minecraft(canvas, gl));
 
-    app.setCamera("orthographic", [-40.0, 40.0, -23.0, 23.0, -40.0, 40.0]);
     // let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    // let fov = 130;
+    // let fov = 179;
     // let zNear = 1;
-    // let zFar = 5000;
-    // app.setCamera("perspective", [Angle.degToRad(fov), aspect, zNear, zFar]);
+    // let zFar = 3000;
+    // app.setCamera("perspective", [angle.degToRad(fov), aspect, zNear, zFar]);
 
+    const len = 40;
+    const [left, right] = [-len, len];
+    const [bottom, top] = [-0.55 * len, 0.55 * len];
+    const near = -300;
+    const far = 300;
 
-    // app.setCamera("orthographic", [-100.0, 100.0, -80.0, 80.0, -100.0, 100.0]);
-
-    // console.log(app.models[0].modelViewMatrix);
-    // console.log(app.models[0].projectionMatrix);
+    app.setProjection("orthographic", [left, right, bottom, top, near, far]);
 
     loadEvents(app);
     app.animate();
@@ -69,7 +70,7 @@ function loadEvents(app) {
         if (cameraRadiusSlider.nextElementSibling) {
             cameraRadiusSlider.nextElementSibling.innerHTML = cameraRadiusSlider.value;
         }
-        // app.setCameraRadius(parseFloat(cameraRadiusSlider.value));
+        app.setCameraRadius(parseFloat(cameraRadiusSlider.value));
     };
 
     cameraAngleSlider.oninput = event => {

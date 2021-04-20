@@ -268,28 +268,39 @@ const m4 = {
       0, 0, 0, 1
     ])
   },
-  perspective:(field, ratio, z_near, z_far)=>{
-    const k = 1 / Math.tan(field / 2);
-    const j = k/ratio;
-    const mat_res =[
-      j, 0, 0, 0,
-      0, k, 0, 0,
-      0, 0, 0, -1,
-      0, 0, 0, 0,
+  perspective: (fov, aspect, near, far) => {
+    const f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
+    const rangeInv = 1.0 / (near - far);
+ 
+    return [
+      f / aspect, 0, 0, 0,
+      0, f, 0, 0,
+      0, 0, (near + far) * rangeInv, -1,
+      0, 0, near * far * rangeInv * 2, 0
     ];
-
-    if (z_far !== Infinity && z_far != null ){
-      const p = 1 / (z_near-z_far);
-      mat_res[10] = p*(z_far+z_near);
-      mat_res[14] = p*z_far*z_near*2;
-    } 
-    else{
-      mat_res[10] = -1;
-      mat_res[14] = -2 * z_near;
-    }
-
-    return mat_res;
   }
+  // perspective:(field, ratio, z_near, z_far)=>{
+  //   const k = 1 / Math.tan(field / 2);
+  //   const j = k/ratio;
+  //   const mat_res =[
+  //     j, 0, 0, 0,
+  //     0, k, 0, 0,
+  //     0, 0, 0, -1,
+  //     0, 0, 0, 0,
+  //   ];
+
+  //   if (z_far !== Infinity && z_far != null ){
+  //     const p = 1 / (z_near-z_far);
+  //     mat_res[10] = p*(z_far+z_near);
+  //     mat_res[14] = p*z_far*z_near*2;
+  //   } 
+  //   else{
+  //     mat_res[10] = -1;
+  //     mat_res[14] = -2 * z_near;
+  //   }
+
+  //   return mat_res;
+  // }
 }
 
 export default m4;
