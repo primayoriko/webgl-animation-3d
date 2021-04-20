@@ -79,6 +79,9 @@ export default class Application {
         }
 
         this.models.forEach(model => model.setProjectionMatrix(m4.multiply(projection.matrix, camera.matrix)));
+        if (!this.animation) {
+            this.render();
+        }
     }
 
     setCameraRadius(radius) {
@@ -121,7 +124,10 @@ export default class Application {
 
         this.models.forEach(model =>
             model.setTextureAndShading(this.enableTextureAndShading));
-
+        
+        if (!this.animation) {
+            this.render();
+        }
     }
 
     toggleAnimation() {
