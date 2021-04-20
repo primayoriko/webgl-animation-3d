@@ -61,7 +61,7 @@ function loadEvents(app) {
     const exportBtn = document.getElementById('export-btn');
     const importBtn = document.getElementById('import-btn');
     const uploadBtn = document.getElementById('upload-btn');
-    const toggleBtn = document.getElementById('toggle-btn');
+    const toggleBtn = document.getElementById('texture-shading-btn');
     const cameraAngleSlider = document.getElementById("camera-angle");
     const cameraRadiusSlider = document.getElementById("camera-radius");
 
