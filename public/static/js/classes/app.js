@@ -54,6 +54,7 @@ export default class Application {
 
         for (let i = 0; i < data.models.length; i++) {
             models[i].loadData(data.models[i]);
+            models[i].setTextureAndShading(data.enableTextureAndShading);
         }
         this.updateViewMatrix();
         this.updateProjectionMatrix();
