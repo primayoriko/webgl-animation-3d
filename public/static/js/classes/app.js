@@ -12,6 +12,8 @@ export default class Application {
     loadData(data){
         const { models } = this;
 
+        this.enableTextureAndShading = data.enableTextureAndShading;
+
         for(let i = 0; i < data.models.length; i++){
             models[i].loadData(data.models[i]);
 
