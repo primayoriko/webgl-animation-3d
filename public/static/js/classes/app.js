@@ -8,6 +8,15 @@ export default class Application {
         this.fps = 60;
     }
 
+    loadData(data){
+        const { models } = this;
+
+        for(let i = 0; i < data.models.length; i++){
+            models[i].loadData(data.models[i]);
+
+        }
+    }
+
     addModel(model) {
         this.models.push(model);
     }

@@ -27,6 +27,11 @@ export default class Model {
 
   animate(frame){ /* TODO: Implement your animation given n as frame count */ }
 
+  loadData(data) {
+    this.anglesSet = data.anglesSet;
+
+  }
+
   static createNode(transform, render, sibling, child, isRoot=false){
     return {
       transform,

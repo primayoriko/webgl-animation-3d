@@ -72,16 +72,16 @@ function loadEvents(app) {
     });
 
     importBtn.addEventListener('click', (e) => {
-        console.log("import");
         if (window.FileList && window.File && window.FileReader) {
             uploadBtn.click();
+
         } else {
             alert("file upload not supported by your browser!");
+
         }
     });
 
     uploadBtn.addEventListener('change', (event) => {
-        console.log("upload");
         const reader = new FileReader();
         const file = event.target.files[0];
 
@@ -91,21 +91,18 @@ function loadEvents(app) {
 
             } catch (err) {
                 alert(`invalid json file data!\n${err}`);
+
             }
-            // console.log(data.models[0].anglesSet);
 
-            app.models[0].anglesSet = data.models[0].anglesSet;
-            app.models[1].anglesSet = data.models[1].anglesSet;
-            app.models[2].anglesSet = data.models[2].anglesSet;
+            app.loadData(data);
 
-            
-
-
+            alert("data loaded!");
+            console.log("data loaded!");
 
         });
 
         reader.readAsText(file);
-        app.render();
+        // app.render();
     });
 
 }
