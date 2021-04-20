@@ -23,9 +23,14 @@ export default class Model {
 
   setProjectionMatrix(matrixArr){ /* TODO: Implement as your model */ }
 
-  toggleTextureAndShading(status){ /* TODO: Implement as your model */ }
+  setTextureAndShading(status){ /* TODO: Implement as your model */ }
 
   animate(frame){ /* TODO: Implement your animation given n as frame count */ }
+
+  loadData(data) {
+    this.anglesSet = data.anglesSet;
+
+  }
 
   static createNode(transform, render, sibling, child, isRoot=false){
     return {

@@ -22,6 +22,13 @@ export default class Zebra extends Model {
       type: "mat4",
     };
 
+    this.viewMatrix = {
+      scope: "uniform",
+      location: gl.getUniformLocation(this.program, "uviewMatrix"),
+      value: m4.new(),
+      type: "mat4",
+    };
+
     this.projectionMatrix = {
       scope: "uniform",
       location: gl.getUniformLocation(this.program, "uProjectionMatrix"),
@@ -184,6 +191,14 @@ export default class Zebra extends Model {
     this.initLeftBackLeg();
   }
 
+  loadData(data) {
+    this.anglesSet = data.anglesSet;
+
+    this.enableTextureAndShading.value = 
+      data.enableTextureAndShading.value;
+
+  }
+
   render(){
     this.updateVars();
 
@@ -212,8 +227,9 @@ export default class Zebra extends Model {
     this.updateUniform(this.projectionMatrix);
   }
 
-  toggleTextureAndShading(status) {
-    this.enableTextureAndShading = status;
+  setTextureAndShading(status) {
+    this.enableTextureAndShading.value = status;
+    this.gl.useProgram(this.program);
     this.updateUniform(this.enableTextureAndShading);
 
   }
