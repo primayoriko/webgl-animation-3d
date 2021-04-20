@@ -45,10 +45,22 @@ export default class Application {
         const { models } = this;
 
         this.enableTextureAndShading = data.enableTextureAndShading;
+        this.animation = data.animation;
+        this.camera = data.camera;
+        this.projection = data.projection;
+        this.frameCount = data.frameCount;
+        this.then = data.then;
+        this.elapsed = data.elapsed;
 
         for (let i = 0; i < data.models.length; i++) {
             models[i].loadData(data.models[i]);
-
+        }
+        this.updateViewMatrix();
+        this.updateProjectionMatrix();
+        if (data.animation) {
+            this._animate()
+        } else {
+            this.render();
         }
     }
 

@@ -123,6 +123,16 @@ function loadEvents(app) {
             }
 
             app.loadData(data);
+            // Update UI
+            aniBtn.innerHTML = data.animation ? " Stop Animation " : " Start Animation ";
+            cameraRadiusSlider.value = data.camera.radius;
+            cameraAngleSlider.value = data.camera.angle;
+            if (cameraRadiusSlider.nextElementSibling) {
+                cameraRadiusSlider.nextElementSibling.innerHTML = cameraRadiusSlider.value;
+            }
+            if (cameraAngleSlider.nextElementSibling) {
+                cameraAngleSlider.nextElementSibling.innerHTML = cameraAngleSlider.value;
+            }
 
             alert("data loaded!");
             console.log("data loaded!");
