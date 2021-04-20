@@ -6,6 +6,7 @@ export default class Application {
         this.models = [];
         this.fps = 60;
         this.enableTextureAndShading = true;
+        this.animation = true;
         this.projection = {
             type: "",
             params: [],
@@ -111,6 +112,13 @@ export default class Application {
 
     }
 
+    toggleAnimation() {
+        this.animation = !this.animation
+        if (this.animation) {
+            this._animate()
+        }
+    }
+
     render() {
         this.models.forEach(model => {
             model.render()
@@ -128,7 +136,9 @@ export default class Application {
     }
 
     _animate() {
-        requestAnimationFrame(() => this._animate());
+        if (this.animation) {
+            requestAnimationFrame(() => this._animate());
+        }
         let now = Date.now();
         this.elapsed = now - this.then;
         if (this.elapsed > this.fpsInterval) {

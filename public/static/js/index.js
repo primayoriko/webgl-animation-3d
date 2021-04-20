@@ -63,6 +63,7 @@ function loadEvents(app) {
     const importBtn = document.getElementById('import-btn');
     const uploadBtn = document.getElementById('upload-btn');
     const toggleBtn = document.getElementById('texture-shading-btn');
+    const aniBtn = document.getElementById('animation-btn');
     const cameraAngleSlider = document.getElementById("camera-angle");
     const cameraRadiusSlider = document.getElementById("camera-radius");
 
@@ -82,8 +83,11 @@ function loadEvents(app) {
 
     toggleBtn.addEventListener('click', event => {
         app.toggleTextureAndShading();
-        console.log("toggle");
+    });
 
+    aniBtn.addEventListener('click', event => {
+        aniBtn.innerHTML = (aniBtn.innerHTML === " Stop Animation ") ? " Start Animation " : " Stop Animation "
+        app.toggleAnimation();
     });
 
     exportBtn.addEventListener('click', event => {
