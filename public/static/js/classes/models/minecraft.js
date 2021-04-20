@@ -110,7 +110,7 @@ export default class Minecraft extends Model {
         this.LEG_RIGHT = 5;
 
         this.anglesSet = [
-            { x: 0, y: 90, z: -90, tx: -15, ty: -5, tz: 0 },
+            { x: 0, y: 90, z: -90, tx: -15, ty: -15, tz: 0 },
             { x: 0, y: 0, z: -30 },
             { x: 0, y: -90 }, { x: 0, y: 90 },
             { x: 0, y: 90 }, { x: 0, y: -90 },

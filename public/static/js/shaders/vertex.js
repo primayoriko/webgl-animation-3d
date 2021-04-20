@@ -118,7 +118,7 @@ void main(void)
     vec3 N = normalize(mat3(normalMatrix) * vNorm);
     mat3 TBN = transpose(mat3(T, B, N));
 
-    vec3 lightPos = vec3(5, 5, 5);
+    vec3 lightPos = vec3(15, 55, 50);
     tsLightPos = TBN * lightPos;
     // Our camera is always at the origin
     tsViewPos = TBN * vec3(0, 0, 0);

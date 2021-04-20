@@ -64,12 +64,11 @@ varying vec4 fColor;
 void main(void)
 {
     vec3 lightDir = normalize(tsLightPos - tsFragPos);
-    vec3 viewDir = normalize(tsViewPos - tsFragPos);
 
     // Only perturb the texture coordinates if a parallax technique is selected
     vec2 uv = fTexCoord;
 
-    vec3 albedo = vec3(1,1,1);
+    vec3 albedo = vec3(0.8,0.8,0.8);
     vec3 ambient = 0.3 * albedo;
 
     if (!enableTextureAndShading) {

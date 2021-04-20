@@ -1,4 +1,7 @@
+import vector from "../utils/vector-utils.js";
 import m4 from "../utils/m4-utils.js";
+import angle from "../utils/angle-utils.js";
+
 export default class Application {
     constructor(canvas, gl) {
         this.gl = gl;
@@ -13,8 +16,12 @@ export default class Application {
             matrix: m4.new()
         };
         this.camera = {
-            radius: 10,
+            radius: 40,
             angle: 0,
+            position: { x: 0, y: 0, z: 0 },
+            target: { x: 0, y: 0, z: 0 },
+            up: { x: 0, y: 1, z: 0 },
+            matrix: m4.new()
         }
 
         // this.init();
@@ -34,12 +41,12 @@ export default class Application {
         this.setProjection("orthographic", [left, right, bottom, top, near, far]);
     }
 
-    loadData(data){
+    loadData(data) {
         const { models } = this;
 
         this.enableTextureAndShading = data.enableTextureAndShading;
 
-        for(let i = 0; i < data.models.length; i++){
+        for (let i = 0; i < data.models.length; i++) {
             models[i].loadData(data.models[i]);
 
         }
@@ -55,59 +62,64 @@ export default class Application {
         projection.type = type;
         projection.params = params;
 
+        this.updateViewMatrix();
         this.updateProjectionMatrix();
     }
 
     updateProjectionMatrix() {
-        const { projection } = this;
+        const { projection, camera } = this;
         const { type, params } = projection;
 
         if (type == "orthographic") {
             projection.matrix = m4.orthographic(...params);
-            // console.log(matrixArr);
+        } else if (type == "perspective") {
+            projection.matrix = m4.perspective(...params);
         } else {
             throw Error("not implemented yet projection type");
         }
 
-        console.log(projection.params);
-        // else if (type == "perspective") {
-        //     projection.matri = m4.perspective(...params);
-        // }
-
-        // this.projectionMatrix = m4.inverse(this.projectionMatrix);
-
-        this.models.forEach(model => model.setProjectionMatrix(projection.matrix));
+        this.models.forEach(model => model.setProjectionMatrix(m4.multiply(projection.matrix, camera.matrix)));
     }
 
-    setCameraRadius(radius){
+    setCameraRadius(radius) {
         const { camera, projection } = this;
-        const { params } = projection;
+        const { params, type } = projection;
 
         camera.radius = radius;
 
-        params[0] = -radius;
-        params[1] = radius;
-        params[2] = -0.55 * radius;
-        params[3] = 0.55 * radius;
+        if (type === "perspective") {
+            this.updateViewMatrix()
+        } else {
+            params[0] = -radius;
+            params[1] = radius;
+            params[2] = -0.55 * radius;
+            params[3] = 0.55 * radius;
+        }
 
         this.updateProjectionMatrix();
 
     }
 
-    setCameraAngle(angle){
+    setCameraAngle(angle) {
         this.camera.angle = angle;
 
-        updateViewMatrix();
+        this.updateViewMatrix();
+        this.updateProjectionMatrix();
     }
 
-    updateViewMatrix(){
-
-    }
-
-    toggleTextureAndShading(){
-        this.enableTextureAndShading = !this.enableTextureAndShading;
+    updateViewMatrix() {
+        let cameraMatrix = m4.rotation(angle.degToRad(this.camera.angle), "y");
+        cameraMatrix = m4.transpose(m4.translate(cameraMatrix, 0, 0, this.camera.radius));
         
-        this.models.forEach(model => 
+        this.camera.position = { x: cameraMatrix[12], y: cameraMatrix[13], z: cameraMatrix[14] };
+        cameraMatrix = vector.lookAt(this.camera.position, this.camera.target, this.camera.up);
+        this.camera.matrix = m4.transpose(m4.inverse(cameraMatrix));
+    }
+
+    toggleTextureAndShading() {
+        this.enableTextureAndShading = !this.enableTextureAndShading;
+
+        this.models.forEach(model =>
             model.setTextureAndShading(this.enableTextureAndShading));
 
     }
@@ -144,8 +156,8 @@ export default class Application {
         if (this.elapsed > this.fpsInterval) {
             this.then = now - (this.elapsed % this.fpsInterval);
             this.frameCount++;
-            
-            this.models.forEach(model => model.animate(this.frameCount) );
+
+            this.models.forEach(model => model.animate(this.frameCount));
             this.render();
         }
     }

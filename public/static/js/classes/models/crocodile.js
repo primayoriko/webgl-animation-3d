@@ -295,7 +295,8 @@ export default class Crocodile extends Model {
             m, 
             () => this.renderTorso(), 
             null, 
-            this.MOUTH_TOP_ID
+            this.MOUTH_TOP_ID,
+            true
           );
     }
 
