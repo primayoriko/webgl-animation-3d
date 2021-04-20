@@ -72,6 +72,7 @@ function loadEvents(app) {
     });
 
     importBtn.addEventListener('click', (e) => {
+        console.log("import");
         if (window.FileList && window.File && window.FileReader) {
             uploadBtn.click();
         } else {
@@ -80,21 +81,31 @@ function loadEvents(app) {
     });
 
     uploadBtn.addEventListener('change', (event) => {
+        console.log("upload");
         const reader = new FileReader();
         const file = event.target.files[0];
 
         reader.addEventListener('load', event => {
             try {
                 var data = JSON.parse(event.target.result);
+
             } catch (err) {
                 alert(`invalid json file data!\n${err}`);
             }
+            // console.log(data.models[0].anglesSet);
 
-            // app.loadJSONData(data);
+            app.models[0].anglesSet = data.models[0].anglesSet;
+            app.models[1].anglesSet = data.models[1].anglesSet;
+            app.models[2].anglesSet = data.models[2].anglesSet;
+
+            
+
+
+
         });
 
         reader.readAsText(file);
-        // app.render();
+        app.render();
     });
 
 }
