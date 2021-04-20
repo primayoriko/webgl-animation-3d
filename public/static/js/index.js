@@ -61,6 +61,13 @@ function loadEvents(app) {
     const exportBtn = document.getElementById('export-btn');
     const importBtn = document.getElementById('import-btn');
     const uploadBtn = document.getElementById('upload-btn');
+    const toggleBtn = document.getElementById('toggle-btn');
+
+    toggleBtn.addEventListener('click', event => {
+        app.toggleTextureAndShading();
+        console.log("toggle");
+
+    });
 
     exportBtn.addEventListener('click', event => {
         var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(app));

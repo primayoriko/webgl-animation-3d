@@ -212,8 +212,9 @@ export default class Zebra extends Model {
     this.updateUniform(this.projectionMatrix);
   }
 
-  toggleTextureAndShading(status) {
-    this.enableTextureAndShading = status;
+  setTextureAndShading(status) {
+    this.enableTextureAndShading.value = status;
+    this.gl.useProgram(this.program);
     this.updateUniform(this.enableTextureAndShading);
 
   }

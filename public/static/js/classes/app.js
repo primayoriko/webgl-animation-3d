@@ -6,6 +6,7 @@ export default class Application {
         this.models = [];
         this.cameraType = "";
         this.fps = 60;
+        this.enableTextureAndShading = true;
     }
 
     loadData(data){
@@ -32,6 +33,14 @@ export default class Application {
         }
 
         this.models.forEach(model => model.setProjectionMatrix(matrixArr));
+    }
+
+    toggleTextureAndShading(){
+        this.enableTextureAndShading = !this.enableTextureAndShading;
+        
+        this.models.forEach(model => 
+            model.setTextureAndShading(this.enableTextureAndShading));
+
     }
 
     render() {
