@@ -62,6 +62,22 @@ function loadEvents(app) {
     const importBtn = document.getElementById('import-btn');
     const uploadBtn = document.getElementById('upload-btn');
     const toggleBtn = document.getElementById('toggle-btn');
+    const cameraAngleSlider = document.getElementById("camera-angle");
+    const cameraRadiusSlider = document.getElementById("camera-radius");
+
+    cameraRadiusSlider.oninput = () => {
+        if (cameraRadiusSlider.nextElementSibling) {
+            cameraRadiusSlider.nextElementSibling.innerHTML = cameraRadiusSlider.value;
+        }
+        // app.setCameraRadius(parseFloat(cameraRadiusSlider.value));
+    };
+
+    cameraAngleSlider.oninput = event => {
+        if (cameraAngleSlider.nextElementSibling) {
+            cameraAngleSlider.nextElementSibling.innerHTML = cameraAngleSlider.value;
+        }
+        // app.setCameraAngle(parseFloat(cameraAngleSlider.value));
+    };
 
     toggleBtn.addEventListener('click', event => {
         app.toggleTextureAndShading();
