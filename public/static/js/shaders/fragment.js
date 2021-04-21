@@ -17,20 +17,25 @@ uniform sampler2D uSampler;
 uniform bool enableTextureAndShading;
 
 varying highp vec2 vTextureCoord;
-varying highp vec3 vLighting;
+varying vec3 fragPos;
+varying vec3 lightPos;
 varying vec4 vColor;
+varying vec3 N;
 
 void main()
 {
     highp vec4 texelColor = texture2D(uSampler, vTextureCoord);
 
-    gl_FragColor = enableTextureAndShading? 
-        vec4(texelColor.rgb * vLighting, texelColor.a):
-        vColor;
+    vec3 directLight = normalize(lightPos - fragPos);
+    vec3 albedo = vec3(0.8,0.8,0.8);
+    vec3 ambient = 0.5 * albedo;
 
-    // gl_FragColor =  vec4(texelColor.rgb * vLighting, texelColor.a);
-    // gl_FragColor = texture2D(uSampler, vTextureCoord);
-    // gl_FragColor =  vColor;
+    vec3 norm = normalize(N);
+    float light = max(dot(norm, directLight), 0.0);
+
+    gl_FragColor = enableTextureAndShading
+        ? vec4(texelColor.rgb * (light * albedo + ambient), texelColor.a)
+        : vColor;
 }
 `;
 
@@ -61,6 +66,7 @@ void main() {
   vec3 directLight = normalize(tsLightPos - tsFragPos);
   vec3 albedo = vec3(0.8,0.8,0.8);
   vec3 ambient = 0.1 * albedo;
+  vec3 lightDir = normalize(tsLightPos - tsFragPos);
   float light = max(dot(worldNormal, directLight), 0.0);
 
   if (!enableTextureAndShading) {

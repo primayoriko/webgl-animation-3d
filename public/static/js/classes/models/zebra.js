@@ -117,8 +117,8 @@ export default class Zebra extends Model {
     this.GLOBAL_ANGLE_ID = 8;
 
     // Components Orientation
-    this.anglesSet = [90, 120, 90, 70, 10, 80, 10, 90, 40, 70, 30, 0, -90, 0, 0];
-    this.anglesSet = [90, 120, 90, 70, 80, 90, 70, 0, -90];
+    // this.anglesSet = [90, 120, 90, 70, 10, 80, 10, 90, 40, 70, 30, 0, -90, 0, 0];
+    this.anglesSet = [90, 120, 90, 150, 30, 30, 150, 0, -90];
 
     this.componentScale = 1;
 
@@ -135,11 +135,11 @@ export default class Zebra extends Model {
     this.backLegHeight = 5.0 * this.componentScale;
 
     this.speed = {
-      head: 1.5,
-      neck: 1.5,
+      head: 3,
+      neck: 3,
       torso: 0.5,
-      frontLeg: 3,
-      backLeg: 3
+      frontLeg: 6,
+      backLeg: -6
     }
 
     // this.texCoord = [
@@ -329,7 +329,7 @@ export default class Zebra extends Model {
     this.initRightBackLeg();
     this.initLeftBackLeg();
 
-    if (frame % 36 == 0) {
+    if (frame % 18 == 0) {
         speed.neck *= -1
         speed.frontLeg *= -1
         speed.backLeg *= -1
@@ -342,7 +342,7 @@ export default class Zebra extends Model {
     const temp = modelViewMatrix.value;
 
     modelViewMatrix.value = instanceMatrix;
-    normalMatrix.value = m4.inverse(instanceMatrix);
+    normalMatrix.value = m4.transpose(m4.inverse(instanceMatrix));
 
     this.updateUniform(modelViewMatrix);
     this.updateUniform(normalMatrix);
