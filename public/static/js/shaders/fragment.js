@@ -43,7 +43,8 @@ varying vec3 v_worldNormal;
 varying vec4 fColor;
 
 varying vec3 tsLightPos;
- 
+varying vec3 tsFragPos;
+
 // The texture.
 uniform samplerCube u_texture;
 uniform bool enableTextureAndShading;
@@ -57,17 +58,17 @@ void main() {
   vec3 eyeToSurfaceDir = normalize(v_worldPosition - u_worldCameraPosition);
   vec3 direction = reflect(eyeToSurfaceDir,worldNormal);
 
-  vec3 directLight = normalize(tsLightPos);
+  vec3 directLight = normalize(tsLightPos - tsFragPos);
   vec3 albedo = vec3(0.8,0.8,0.8);
-  vec3 ambient = 0.7 * albedo;
-  float light = dot(worldNormal, directLight);
+  vec3 ambient = 0.1 * albedo;
+  float light = max(dot(worldNormal, directLight), 0.0);
 
   if (!enableTextureAndShading) {
     // No bump mapping
     gl_FragColor = fColor;
   }else{
-    gl_FragColor = textureCube(u_texture, direction);
-
+    vec4 tex = textureCube(u_texture, direction);
+    gl_FragColor = vec4(tex.rgb * (light * albedo + ambient), tex.a);
   }
 }
 `;

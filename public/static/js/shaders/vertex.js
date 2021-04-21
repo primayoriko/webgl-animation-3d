@@ -56,6 +56,7 @@ attribute vec4 aVertexColor;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
+uniform mat4 normalMatrix;
 uniform mat4 u_world;
  
 varying vec3 v_worldPosition;
@@ -63,6 +64,7 @@ varying vec3 v_worldNormal;
 varying vec4 fColor;
 
 varying vec3 tsLightPos;
+varying vec3 tsFragPos;
 
  
 void main() {
@@ -75,8 +77,10 @@ void main() {
   // orient the normals and pass to the fragment shader
   v_worldNormal = mat3(u_world) * aVertexNormal;
 
-  vec3 lightPos = vec3(0.5, 0.7, 1);
-  tsLightPos = lightPos;
+  vec3 lightPos = vec3(3, 55, 50);
+  vec3 N = normalize(mat3(normalMatrix) * aVertexNormal);
+  tsLightPos = N * lightPos;
+  tsFragPos = N * vec3(modelViewMatrix * aVertexPosition);
 
 
   fColor = aVertexColor;
