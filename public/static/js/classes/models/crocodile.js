@@ -68,7 +68,7 @@ export default class Crocodile extends Model {
         location: gl.getAttribLocation(this.program, "aVertexPosition"),
         value: [],
         buffer: gl.createBuffer(),
-        size: 3,
+        size: 4,
       };
   
       this.vColor = {
@@ -204,7 +204,9 @@ export default class Crocodile extends Model {
           0.2, 0.3, 0.0, 1.0, 
           0.2, 0.3, 0.0, 1.0 
         ];
+
       
+      this.loadTexture();
       this.init();
     }
     animate(frame) {
@@ -315,10 +317,7 @@ export default class Crocodile extends Model {
       // gl.uniform3fv(this.worldCameraPositionLocation.location, cameraPosition);
 
 
-      var worldMatrix = m4.rotation(this.anglesSet[this.TORSO_ID]* Math.PI / 180, 'x');
-      worldMatrix = m4.rotate(worldMatrix,this.anglesSet[this.TORSO_ID]* Math.PI / 180,'y');
-      // gl.uniformMatrix4fv(this.worldLocation.location, false, worldMatrix);
-      this.worldLocation.value = worldMatrix;
+
       
       // var cameraPosition = [0, 0, 2];
       // var target = {x:0, y:0, z:0};
@@ -328,12 +327,20 @@ export default class Crocodile extends Model {
       // var viewMatrix = m4.inverse(cameraMatrix);
       // gl.uniformMatrix4fv(this.modelViewMatrix.location, false, viewMatrix);
       // this.modelViewMatrix.value = viewMatrix;
-      gl.uniform1i(this.textureLocation.location, 0);
       
     }
 
+    retexture(){
+      const { gl} = this;
 
+      var worldMatrix = m4.rotation(this.anglesSet[this.TORSO_ID]* Math.PI / 180, 'x');
+      worldMatrix = m4.rotate(worldMatrix,this.anglesSet[this.TORSO_ID]* Math.PI / 180,'y');
+      // gl.uniformMatrix4fv(this.worldLocation.location, false, worldMatrix);
+      this.worldLocation.value = worldMatrix;
+      gl.uniform1i(this.textureLocation.location, 0);
 
+    }
+    
     // IMPORTANT FUNCTION
 
     init(){
@@ -393,7 +400,7 @@ export default class Crocodile extends Model {
       this.updateBuffer(this.vIndex);
       // this.updateBuffer(this.vTextureCoord);
   
-      this.loadTexture();
+      this.retexture();
 
     }
     draw(instanceMatrix){
@@ -793,47 +800,41 @@ export default class Crocodile extends Model {
       
       
       this.vPosition.value = [
-        -0.5, -0.5,  -0.5,
-        -0.5,  0.5,  -0.5,
-        0.5, -0.5,  -0.5,
-        -0.5,  0.5,  -0.5,
-        0.5,  0.5,  -0.5,
-        0.5, -0.5,  -0.5,
-
-        -0.5, -0.5,   0.5,
-        0.5, -0.5,   0.5,
-        -0.5,  0.5,   0.5,
-        -0.5,  0.5,   0.5,
-        0.5, -0.5,   0.5,
-        0.5,  0.5,   0.5,
-
-        -0.5,   0.5, -0.5,
-        -0.5,   0.5,  0.5,
-        0.5,   0.5, -0.5,
-        -0.5,   0.5,  0.5,
-        0.5,   0.5,  0.5,
-        0.5,   0.5, -0.5,
-
-        -0.5,  -0.5, -0.5,
-        0.5,  -0.5, -0.5,
-        -0.5,  -0.5,  0.5,
-        -0.5,  -0.5,  0.5,
-        0.5,  -0.5, -0.5,
-        0.5,  -0.5,  0.5,
-
-        -0.5,  -0.5, -0.5,
-        -0.5,  -0.5,  0.5,
-        -0.5,   0.5, -0.5,
-        -0.5,  -0.5,  0.5,
-        -0.5,   0.5,  0.5,
-        -0.5,   0.5, -0.5,
-
-        0.5,  -0.5, -0.5,
-        0.5,   0.5, -0.5,
-        0.5,  -0.5,  0.5,
-        0.5,  -0.5,  0.5,
-        0.5,   0.5, -0.5,
-        0.5,   0.5,  0.5,
+        // Front face
+      -0.5, -0.5, 0.5, 1,
+      0.5, -0.5, 0.5, 1,
+      0.5, 0.5, 0.5, 1,
+      -0.5, 0.5, 0.5, 1,
+  
+      // Back face
+      -0.5, -0.5, -0.5, 1,
+      -0.5, 0.5, -0.5, 1,
+      0.5, 0.5, -0.5, 1,
+      0.5, -0.5, -0.5, 1,
+  
+      // Top face
+      -0.5, 0.5, -0.5, 1,
+      -0.5, 0.5, 0.5, 1,
+      0.5, 0.5, 0.5, 1,
+      0.5, 0.5, -0.5, 1,
+  
+      // Bottom face
+      -0.5, -0.5, -0.5, 1,
+      0.5, -0.5, -0.5, 1,
+      0.5, -0.5, 0.5, 1,
+      -0.5, -0.5, 0.5, 1,
+  
+      // Right face
+      0.5, -0.5, -0.5, 1,
+      0.5, 0.5, -0.5, 1,
+      0.5, 0.5, 0.5, 1,
+      0.5, -0.5, 0.5, 1,
+  
+      // Left face
+      -0.5, -0.5, -0.5, 1,
+      -0.5, -0.5, 0.5, 1,
+      -0.5, 0.5, 0.5, 1,
+      -0.5, 0.5, -0.5, 1,
       ];
       
       this.vColor.value = [
@@ -876,6 +877,7 @@ export default class Crocodile extends Model {
         16, 17, 18,     16, 18, 19,   // right
         20, 21, 22,     20, 22, 23,   // left
       ];
+
       // this.makeQuadSurface(1, 0, 3, 2);
       // this.vColor.value.push(...this.colorsSet.slice(12, 16));
       // this.vColor.value.push(...this.colorsSet.slice(12, 16));
