@@ -20,6 +20,7 @@ export default class Model {
   updateVars() { /* TODO: Impelment as your own model */ }
 
   // generateNormal() { /* TODO: Impelment as your own model */ }
+  setCameraPosition(camera){}
 
   setProjectionMatrix(matrixArr){ /* TODO: Implement as your model */ }
 
@@ -140,5 +141,4 @@ export default class Model {
       new Uint16Array(indices.value), gl.STATIC_DRAW);
     
   }
-
 }

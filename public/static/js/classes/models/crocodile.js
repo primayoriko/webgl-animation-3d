@@ -340,7 +340,7 @@ export default class Crocodile extends Model {
       gl.uniform1i(this.textureLocation.location, 0);
 
     }
-    
+
     // IMPORTANT FUNCTION
 
     init(){
@@ -380,6 +380,11 @@ export default class Crocodile extends Model {
       this.gl.useProgram(this.program);
       this.updateUniform(this.enableTextureAndShading);
   
+    }
+    setCameraPosition(camera){
+      this.worldCameraPositionLocation.value = camera;
+      this.gl.useProgram(this.program);
+      this.updateUniform(this.worldCameraPositionLocation);
     }
   
     updateVars() {
@@ -426,6 +431,8 @@ export default class Crocodile extends Model {
   
       modelViewMatrix.value = temp;
     }
+
+    
 
     //INIT FUNCTION
 
@@ -752,7 +759,7 @@ export default class Crocodile extends Model {
     // }
 
     initShape() {
-      this.worldCameraPositionLocation.value = [0,0,2];
+      // this.worldCameraPositionLocation.value = [0,0,2];
       
       this.vNormal.value = [
         0, 0, -1,

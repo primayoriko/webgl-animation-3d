@@ -134,6 +134,9 @@ export default class Application {
         this.camera.position = { x: cameraMatrix[12], y: cameraMatrix[13], z: cameraMatrix[14] };
         cameraMatrix = vector.lookAt(this.camera.position, this.camera.target, this.camera.up);
         this.camera.matrix = m4.transpose(m4.inverse(cameraMatrix));
+
+        this.models.forEach(model => model.setCameraPosition(this.camera.position));
+
     }
 
     toggleTextureAndShading() {
