@@ -11,7 +11,7 @@ export default class Crocodile extends Model {
     constructor(canvas, gl){
       super(canvas, gl);
 
-      this.program = createProgram(this.gl, defaultVS, defaultFS);
+      this.program = createProgram(this.gl, crocodileVS, crocodileFS);
   
       this.modelViewMatrix = {
         scope: "uniform",
@@ -26,23 +26,58 @@ export default class Crocodile extends Model {
         value: m4.new(),
         type: "mat4",
       };
+
+      this.normalMatrix = {
+        scope: "uniform",
+        location: gl.getUniformLocation(this.program, "normalMatrix"),
+        value: m4.new(),
+        type: "mat4",
+      };
+
+      // this.enableTextureAndShading = {
+      //   scope: "uniform",
+      //   location: gl.getUniformLocation(this.program, "enableTextureAndShading"),
+      //   value: true,
+      //   type: "bool",
+      // };
+
+      this.textureLocation = {
+        scope: "uniform",
+        location: gl.getUniformLocation(this.program, "u_texture"),
+        value: [],
+        type: "samplerCube",
+      };
+
+      this.worldLocation = {
+        scope: "uniform",
+        location: gl.getUniformLocation(this.program, "u_world"),
+        value: m4.new(),
+        type: "mat4",
+      };
+
+      this.worldCameraPositionLocation = {
+        scope: "uniform",
+        location: gl.getUniformLocation(this.program, "u_worldCameraPosition"),
+        value: [],
+        type: "vec3",
+      };
   
       this.vPosition = {
         scope: "attribute",
-        buffer: gl.createBuffer(),
-        location: gl.getAttribLocation(this.program, "vPosition"),
+        location: gl.getAttribLocation(this.program, "aVertexPosition"),
         value: [],
         buffer: gl.createBuffer(),
-        size: 4,
+        size: 3,
       };
   
-      this.vColor = {
-        scope: "attribute",
-        location: gl.getAttribLocation(this.program, "vColor"),
-        value: [],
-        buffer: gl.createBuffer(),
-        size: 4,
-      };
+      // this.vColor = {
+      //   scope: "attribute",
+      //   location: gl.getAttribLocation(this.program, "aVertexColor"),
+      //   value: [],
+      //   buffer: gl.createBuffer(),
+      //   size: 4,
+      // };
+
       this.vNormal = {
         scope: "attribute",
         location: gl.getAttribLocation(this.program, "aVertexNormal"),
@@ -50,6 +85,24 @@ export default class Crocodile extends Model {
         buffer: gl.createBuffer(),
         size: 3,
       };
+
+      // this.vTextureCoord = {
+      //   scope: "attribute",
+      //   location: gl.getAttribLocation(this.program, "aTextureCoord"),
+      //   value: [],
+      //   buffer: gl.createBuffer(),
+      //   size: 2,
+      // };
+  
+      // this.vIndex = {
+      //   scope: "index",
+      //   value: [],
+      //   buffer: gl.createBuffer(),
+      // };
+
+      
+
+      this.texture = this.gl.createTexture();
 
       this.TORSO_ID = 0;
       this.MOUTH_TOP_ID = 1;
@@ -192,46 +245,92 @@ export default class Crocodile extends Model {
     }
   }
 
-    createTexture(){
+    loadTexture(){
       // Create a texture.
-      var red = new Uint8Array([255, 0, 0, 255]);
-      var green = new Uint8Array([0, 255, 0, 255]);
-      var blue = new Uint8Array([0, 0, 255, 255]);
-      var cyan = new Uint8Array([0, 255, 255, 255]);
-      var magenta = new Uint8Array([255, 0, 255, 255]);
-      var yellow = new Uint8Array([255, 255, 0, 255]);
+      const { gl, texture, textureLocation  } = this;
+      gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+      const faceInfos = [
+        {
+          target: gl.TEXTURE_CUBE_MAP_POSITIVE_X, 
+          url: '../static/img/pos-x.jpg',
+        },
+        {
+          target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 
+          url: '../static/img/neg-x.jpg',
+        },
+        {
+          target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 
+          url: '../static/img/pos-y.jpg',
+        },
+        {
+          target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 
+          url: '../static/img/neg-y.jpg',
+        },
+        {
+          target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 
+          url: '../static/img/pos-z.jpg',
+        },
+        {
+          target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 
+          url: '../static/img/neg-z.jpg',
+        },
+      ];
 
-      var cubeMap;
-      const { gl, texture, sampler2D, imageTexture } = this;
+      faceInfos.forEach((faceInfo) => {
+        const {target, url} = faceInfo;
+       
+        // Upload the canvas to the cubemap face.
+        const level = 0;
+        const internalFormat = gl.RGBA;
+        const width = 512;
+        const height = 512;
+        const format = gl.RGBA;
+        const type = gl.UNSIGNED_BYTE;
+       
+        // setup each face so it's immediately renderable
+        gl.texImage2D(target, level, internalFormat, width, height, 0, format, type, null);
+       
+        // Asynchronously load an image
+        const image = new Image();
+        image.src = url;
+        image.addEventListener('load', function() {
+          // Now that the image has loaded upload it to the texture.
+          gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+          gl.texImage2D(target, level, internalFormat, format, type, image);
+          gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+        });
+      });
 
-      cubeMap = gl.createTexture();
+      gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+      gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
 
-      gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubeMap);
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X ,0,gl.RGBA,
-         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, red);
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X ,0,gl.RGBA,
-         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, green);
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y ,0,gl.RGBA,
-         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, blue);
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y ,0,gl.RGBA,
-         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, cyan);
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z ,0,gl.RGBA,
-         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, yellow);
-      gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z ,0,gl.RGBA,
-         1,1,0,gl.RGBA,gl.UNSIGNED_BYTE, magenta);
-  
-  
-      gl.texParameteri(gl.TEXTURE_CUBE_MAP,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_CUBE_MAP,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+      var _projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, 1, 2000);
+      gl.uniformMatrix4fv(projectionMatrix, false, _projectionMatrix);
 
+      var cameraPosition = [0, 0, 2];
+      gl.uniform3fv(worldCameraPositionLocation, cameraPosition);
+
+
+
+      var worldMatrix = m4.rotation(this.anglesSet[this.TORSO_ID]* Math.PI / 180, 'x');
+      worldMatrix = m4.rotate(worldMatrix,this.anglesSet[this.TORSO_ID]* Math.PI / 180,'y');
+      gl.uniformMatrix4fv(this.worldLocation, false, worldMatrix);
+      
+      gl.uniformMatrix4fv(viewLocation, false, viewMatrix);
     
+      gl.uniform1i(textureLocation, 0);
+      
     }
+
 
 
     // IMPORTANT FUNCTION
 
     init(){
       this.initShape();
+
+      this.updateVars();
+
       this.initTorso();
       this.initMouth_Top();
       this.initEye_Left();
@@ -259,17 +358,33 @@ export default class Crocodile extends Model {
       this.gl.useProgram(this.program);
       this.updateUniform(this.projectionMatrix);
     }
+    setTextureAndShading(status) {
+      this.enableTextureAndShading.value = status;
+      this.gl.useProgram(this.program);
+      this.updateUniform(this.enableTextureAndShading);
+  
+    }
   
     updateVars() {
       this.gl.useProgram(this.program);
   
       this.updateBuffer(this.projectionMatrix);
       this.updateBuffer(this.modelViewMatrix);
-  
+      // this.updateBuffer(this.enableTextureAndShading);
+      this.updateBuffer(this.normalMatrix);
+      this.updateBuffer(this.textureLocation);
+      this.updateBuffer(this.worldLocation);
+      this.updateBuffer(this.worldCameraPositionLocation);
+
+
       this.updateBuffer(this.vPosition);
-      this.updateBuffer(this.vColor);
+      // this.updateBuffer(this.vColor);
+      this.updateBuffer(this.vNormal);
+      // this.updateBuffer(this.vIndex);
+      // this.updateBuffer(this.vTextureCoord);
   
-      // this.updateBuffer(this.vNormal);
+      this.loadTexture();
+
     }
     draw(instanceMatrix){
       const { gl, modelViewMatrix } = this;
@@ -585,99 +700,149 @@ export default class Crocodile extends Model {
       this.draw(instanceMatrix);
     }
 
-    makeQuadSurface(a, b, c, d) {
-      a *= 4; b *= 4; c *= 4; d *= 4;
-      // console.log(this.vPosition.value);
-      // let normal = normalize(cross(this.verticesSet.slice(b, b+4)-this.verticesSet.slice(a, a+4) , this.verticesSet.slice(c, c+4)-this.verticesSet.slice(b, b+4) ));
-      // this.vNormal.value.push(normal);
+    // makeQuadSurface(a, b, c, d) {
+    //   a *= 4; b *= 4; c *= 4; d *= 4;
+    //   // console.log(this.vPosition.value);
+    //   // let normal = normalize(cross(this.verticesSet.slice(b, b+4)-this.verticesSet.slice(a, a+4) , this.verticesSet.slice(c, c+4)-this.verticesSet.slice(b, b+4) ));
+    //   // this.vNormal.value.push(normal);
 
 
-      var t1 = vector.subtract(this.verticesSet.slice(b, b+4), this.verticesSet.slice(a, a+4));
-      var t2 = vector.subtract(this.verticesSet.slice(c, c+4), this.verticesSet.slice(a, a+4));
-      var normal = vector.multiply(t1, t2);
-      this.vNormal.value.push(normal);
+    //   // var t1 = vector.subtract(this.verticesSet.slice(b, b+4), this.verticesSet.slice(a, a+4));
+    //   // var t2 = vector.subtract(this.verticesSet.slice(c, c+4), this.verticesSet.slice(a, a+4));
+    //   // var normal = vector.multiply(t1, t2);
+    //   // this.vNormal.value.push(normal);
 
 
   
-      this.vPosition.value.push(...this.verticesSet.slice(a, a+4));
-      this.vPosition.value.push(...this.verticesSet.slice(b, b+4));
-      this.vPosition.value.push(...this.verticesSet.slice(c, c+4));
-      this.vPosition.value.push(...this.verticesSet.slice(d, d+4));
+    //   this.vPosition.value.push(...this.verticesSet.slice(a, a+4));
+    //   this.vPosition.value.push(...this.verticesSet.slice(b, b+4));
+    //   this.vPosition.value.push(...this.verticesSet.slice(c, c+4));
+    //   this.vPosition.value.push(...this.verticesSet.slice(d, d+4));
   
-      // console.log(this.vPosition.value);
-    }
+    //   // console.log(this.vPosition.value);
+    // }
 
     initShape() {
       
-      // this.vNormal.value = [
-      //   // Front
-      //   0.0,  0.0,  1.0,
-      //   0.0,  0.0,  1.0,
-      //   0.0,  0.0,  1.0,
-      //   0.0,  0.0,  1.0,
-  
-      //   // Back
-      //   0.0,  0.0, -1.0,
-      //   0.0,  0.0, -1.0,
-      //   0.0,  0.0, -1.0,
-      //   0.0,  0.0, -1.0,
-  
-      //   // Top
-      //   0.0,  1.0,  0.0,
-      //   0.0,  1.0,  0.0,
-      //   0.0,  1.0,  0.0,
-      //   0.0,  1.0,  0.0,
-  
-      //   // Bottom
-      //   0.0, -1.0,  0.0,
-      //   0.0, -1.0,  0.0,
-      //   0.0, -1.0,  0.0,
-      //   0.0, -1.0,  0.0,
-  
-      //   // Right
-      //   1.0,  0.0,  0.0,
-      //   1.0,  0.0,  0.0,
-      //   1.0,  0.0,  0.0,
-      //   1.0,  0.0,  0.0,
-    
-      //   // Left
-      //   -1.0,  0.0,  0.0,
-      //   -1.0,  0.0,  0.0,
-      //   -1.0,  0.0,  0.0,
-      //   -1.0,  0.0,  0.0
-      // ];
+      this.vNormal.value = [
+        0, 0, -1,
+        0, 0, -1,
+        0, 0, -1,
+        0, 0, -1,
+        0, 0, -1,
+        0, 0, -1,
+
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
+
+        0, 1, 0,
+        0, 1, 0,
+        0, 1, 0,
+        0, 1, 0,
+        0, 1, 0,
+        0, 1, 0,
+
+        0, -1, 0,
+        0, -1, 0,
+        0, -1, 0,
+        0, -1, 0,
+        0, -1, 0,
+        0, -1, 0,
+
+        -1, 0, 0,
+        -1, 0, 0,
+        -1, 0, 0,
+        -1, 0, 0,
+        -1, 0, 0,
+        -1, 0, 0,
+
+        1, 0, 0,
+        1, 0, 0,
+        1, 0, 0,
+        1, 0, 0,
+        1, 0, 0,
+        1, 0, 0,
+      ];
       
+      
+      this.vPosition.value = [
+        -0.5, -0.5,  -0.5,
+        -0.5,  0.5,  -0.5,
+        0.5, -0.5,  -0.5,
+        -0.5,  0.5,  -0.5,
+        0.5,  0.5,  -0.5,
+        0.5, -0.5,  -0.5,
+
+        -0.5, -0.5,   0.5,
+        0.5, -0.5,   0.5,
+        -0.5,  0.5,   0.5,
+        -0.5,  0.5,   0.5,
+        0.5, -0.5,   0.5,
+        0.5,  0.5,   0.5,
+
+        -0.5,   0.5, -0.5,
+        -0.5,   0.5,  0.5,
+        0.5,   0.5, -0.5,
+        -0.5,   0.5,  0.5,
+        0.5,   0.5,  0.5,
+        0.5,   0.5, -0.5,
+
+        -0.5,  -0.5, -0.5,
+        0.5,  -0.5, -0.5,
+        -0.5,  -0.5,  0.5,
+        -0.5,  -0.5,  0.5,
+        0.5,  -0.5, -0.5,
+        0.5,  -0.5,  0.5,
+
+        -0.5,  -0.5, -0.5,
+        -0.5,  -0.5,  0.5,
+        -0.5,   0.5, -0.5,
+        -0.5,  -0.5,  0.5,
+        -0.5,   0.5,  0.5,
+        -0.5,   0.5, -0.5,
+
+        0.5,  -0.5, -0.5,
+        0.5,   0.5, -0.5,
+        0.5,  -0.5,  0.5,
+        0.5,  -0.5,  0.5,
+        0.5,   0.5, -0.5,
+        0.5,   0.5,  0.5,
+      ];
   
-      this.makeQuadSurface(1, 0, 3, 2);
-      this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      this.makeQuadSurface(2, 3, 7, 6);
-      this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      this.makeQuadSurface(3, 0, 4, 7);
-      this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      this.makeQuadSurface(6, 5, 1, 2);
-      this.vColor.value.push(...this.colorsSet.slice(8, 12));
-      this.vColor.value.push(...this.colorsSet.slice(8, 12));
-      this.vColor.value.push(...this.colorsSet.slice(8, 12));
-      this.vColor.value.push(...this.colorsSet.slice(8, 12));
-      this.makeQuadSurface(4, 5, 6, 7);
-      this.vColor.value.push(...this.colorsSet.slice(4, 8));
-      this.vColor.value.push(...this.colorsSet.slice(4, 8));
-      this.vColor.value.push(...this.colorsSet.slice(4, 8));
-      this.vColor.value.push(...this.colorsSet.slice(4, 8));
-      this.makeQuadSurface(5, 4, 0, 1);
-      this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      this.vColor.value.push(...this.colorsSet.slice(12, 16));
+      // this.makeQuadSurface(1, 0, 3, 2);
+      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
+      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
+      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
+      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
+      // this.makeQuadSurface(2, 3, 7, 6);
+      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
+      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
+      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
+      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
+      // this.makeQuadSurface(3, 0, 4, 7);
+      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
+      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
+      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
+      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
+      // this.makeQuadSurface(6, 5, 1, 2);
+      // this.vColor.value.push(...this.colorsSet.slice(8, 12));
+      // this.vColor.value.push(...this.colorsSet.slice(8, 12));
+      // this.vColor.value.push(...this.colorsSet.slice(8, 12));
+      // this.vColor.value.push(...this.colorsSet.slice(8, 12));
+      // this.makeQuadSurface(4, 5, 6, 7);
+      // this.vColor.value.push(...this.colorsSet.slice(4, 8));
+      // this.vColor.value.push(...this.colorsSet.slice(4, 8));
+      // this.vColor.value.push(...this.colorsSet.slice(4, 8));
+      // this.vColor.value.push(...this.colorsSet.slice(4, 8));
+      // this.makeQuadSurface(5, 4, 0, 1);
+      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
+      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
+      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
+      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
     
       // this.createTexture();
     }

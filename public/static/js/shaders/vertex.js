@@ -50,25 +50,26 @@ void main()
 `;
 
 const crocodileVS = `
-varying vec3 R;
-attribute vec4 vPosition;
-attribute vec4 vNormal;
+attribute vec4 aVertexPosition;
+attribute vec3 aVertexNormal;
 
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-uniform mat3 normalMatrix;
 
-void main()
-{
-    gl_Position = projectionMatrix*modelViewMatrix*vPosition;
-     
-    vec3 eyePos  = (modelViewMatrix*vPosition).xyz;
-
-    vec3 N = normalize(normalMatrix*vNormal.xyz);
-
-    
-    R = reflect(eyePos, N);
-   
+uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
+uniform mat4 u_world;
+ 
+varying vec3 v_worldPosition;
+varying vec3 v_worldNormal;
+ 
+void main() {
+  // Multiply the position by the matrix.
+  gl_Position = uProjectionMatrix * uModelViewMatrix * u_world * aVertexPosition;
+ 
+  // send the view position to the fragment shader
+  v_worldPosition = (u_world * aVertexPosition).xyz;
+ 
+  // orient the normals and pass to the fragment shader
+  v_worldNormal = mat3(u_world) * aVertexNormal;
 }
 `;
 export { defaultVS, zebraVS, crocodileVS  };
