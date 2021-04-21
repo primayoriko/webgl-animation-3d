@@ -28,10 +28,6 @@ export default class Application {
     }
 
     init() {
-        // const [left, right] = [-40, 40];
-        // const [bottom, top] = [-23, 23];
-        // const near = -40;
-        // const far = 40;
         const len = 40;
         const [left, right] = [-len, len];
         const [bottom, top] = [-len, len];
@@ -66,7 +62,14 @@ export default class Application {
     }
 
     addModel(model) {
-        this.models.push(model);
+        const { projection, camera, 
+            models, enableTextureAndShading } = this;
+
+        models.push(model);
+
+        model.setProjectionMatrix(m4.multiply(projection.matrix, camera.matrix));
+        model.setTextureAndShading(enableTextureAndShading);
+
     }
 
     setProjection(type, params) {
@@ -105,6 +108,7 @@ export default class Application {
 
         if (type === "perspective") {
             this.updateViewMatrix()
+
         } else {
             params[0] = -radius;
             params[1] = radius;
