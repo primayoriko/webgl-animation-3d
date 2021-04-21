@@ -65,7 +65,30 @@
         </div>
 
         <textarea class="" rows="40" cols="90" readonly >
-            Tulis disini nanti help nya
+Secara garis besar, program akan menampilkan 3 model object pada canvas, dengan rincian berikut
+
+- Object Zebra, yang mengimplementasikan texture (image) mapping
+
+- Object Minecraft, yang mengimplementasikan bump mapping
+
+- Object Crocodole, yang mengimplementasikan environment mapping
+
+Ketiga model objek tersebut senantiasa bergerak (memiliki animasi) yang sudah diatur sebelumnya. 
+
+Selain itu, user/pengguna aplikasi dapat melakukan beberapa tindakan dengan menggunakan button atau slider diatas canvas yang memiliki rincian berikut
+
+- Button Export, berfungsi untuk melakukan exporting dari data aplikasi ke dalam bentuk JSON yang dapat di download
+
+- Button Import, berfungsi untuk mengimport data JSON yang sudah disimpan sebelumnya untuk kemudian dimuat datanya ke dalam aplikasi
+
+- Button Texture And Shading, berfungsi sebagai toggle untuk memati/nyalakan texture dan shading pada seluruh model object
+
+- Button [Start | Stop] Animation, berfungsi sebagai toggle untuk memati/nyalakan animasi pada seluruh model object
+
+- Slider radius, berfungsi untuk mengatur jarak dari kamera ke model objek
+
+- Slider angle, berfungsi untuk mengatur sudut perputaran (dengan jarak sebesar radius) kamera ke model objek
+
         </textarea>
 
         <div style="height: 200px; max-height: 10%;"></div>
