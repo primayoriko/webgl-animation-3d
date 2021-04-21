@@ -159,14 +159,6 @@ export default class Zebra extends Model {
     this.initLeftBackLeg();
   }
 
-  loadData(data) {
-    this.anglesSet = data.anglesSet;
-
-    this.enableTextureAndShading.value = 
-      data.enableTextureAndShading.value;
-
-  }
-
   render(){
     this.updateVars();
 
