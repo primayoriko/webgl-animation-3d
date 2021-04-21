@@ -6,9 +6,9 @@ import angle from "../../utils/angle-utils.js";
 
 import { createProgram } from "../../utils/webgl-utils.js";
 
-import { defaultVS } from "../../shaders/vertex.js";
+import { minecraftVS } from "../../shaders/vertex.js";
 
-import { defaultFS } from "../../shaders/fragment.js";
+import { minecraftFS } from "../../shaders/fragment.js";
 
 export default class Minecraft extends Model {
 
@@ -16,7 +16,7 @@ export default class Minecraft extends Model {
     constructor(canvas, gl) {
         super(canvas, gl);
 
-        this.program = createProgram(this.gl, defaultVS, defaultFS);
+        this.program = createProgram(this.gl, minecraftVS, minecraftFS);
 
         this.modelViewMatrix = {
             scope: "uniform",
@@ -32,12 +32,25 @@ export default class Minecraft extends Model {
             type: "mat4",
         };
 
+        this.normalMatrix = {
+            scope: "uniform",
+            location: gl.getUniformLocation(this.program, "normalMatrix"),
+            value: m4.new(),
+            type: "mat4",
+        };
+
+        this.enableTextureAndShading = {
+            scope: "uniform",
+            location: gl.getUniformLocation(this.program, "enableTextureAndShading"),
+            value: true,
+            type: "bool",
+        };
+
         this.vPosition = {
             scope: "attribute",
             buffer: gl.createBuffer(),
             location: gl.getAttribLocation(this.program, "vPosition"),
             value: [],
-            buffer: gl.createBuffer(),
             size: 4,
         };
 
@@ -49,6 +62,46 @@ export default class Minecraft extends Model {
             size: 4,
         };
 
+        this.vTang = {
+            scope: "attribute",
+            location: gl.getAttribLocation(this.program, "vTang"),
+            value: [],
+            buffer: gl.createBuffer(),
+            size: 3,
+        };
+
+        this.vBitang = {
+            scope: "attribute",
+            location: gl.getAttribLocation(this.program, "vBitang"),
+            value: [],
+            buffer: gl.createBuffer(),
+            size: 3,
+        };
+
+        this.vTexCoord = {
+            scope: "attribute",
+            location: gl.getAttribLocation(this.program, "vTexCoord"),
+            value: [],
+            buffer: gl.createBuffer(),
+            size: 2,
+        };
+
+        this.texNorm = {
+            scope: "uniform",
+            location: gl.getUniformLocation(this.program, "texNorm"),
+            value: undefined,
+            type: "texture",
+        };
+
+        this.vIndex = {
+            scope: "index",
+            value: [],
+            buffer: gl.createBuffer(),
+        };
+
+        this.texture = this.gl.createTexture();
+        this.bumpTexture = document.getElementById("texBump");
+
         this.TORSO_ID = 0;
         this.HEAD = 1;
         this.ARM_LEFT = 2;
@@ -57,7 +110,7 @@ export default class Minecraft extends Model {
         this.LEG_RIGHT = 5;
 
         this.anglesSet = [
-            { x: 0, y: 90, z: -90 },
+            { x: 0, y: 90, z: -90, tx: -15, ty: -15, tz: 0 },
             { x: 0, y: 0, z: -30 },
             { x: 0, y: -90 }, { x: 0, y: 90 },
             { x: 0, y: 90 }, { x: 0, y: -90 },
@@ -70,26 +123,6 @@ export default class Minecraft extends Model {
             leg: -5
         }
 
-        this.theta = [90, 0, 0, 0, 0, 0, 110, -20, 110, -20, 110, -20, 110, -20, -90, 0, 0];
-
-        this.verticesSet = [
-            -0.5, -0.5, 0.5, 1.0,
-            -0.5, 0.5, 0.5, 1.0,
-            0.5, 0.5, 0.5, 1.0,
-            0.5, -0.5, 0.5, 1.0,
-            -0.5, -0.5, -0.5, 1.0,
-            -0.5, 0.5, -0.5, 1.0,
-            0.5, 0.5, -0.5, 1.0,
-            0.5, -0.5, -0.5, 1.0
-        ];
-
-        this.colorsSet = [
-            0.46, 0.7, 0.0, 1,
-            0.2, 0.3, 0.0, 1.0,
-            0.2, 0.3, 0.0, 1.0,
-            0.2, 0.3, 0.0, 1.0
-        ];
-
         this.init();
     }
 
@@ -97,6 +130,8 @@ export default class Minecraft extends Model {
 
     init() {
         this.initShape();
+        this.initTexture();
+
         this.initTorso();
         this.initHead();
         this.initArmLeft();
@@ -107,7 +142,6 @@ export default class Minecraft extends Model {
     render() {
         this.updateVars();
         this.traverse(this.TORSO_ID);
-
     }
 
     setProjectionMatrix(matrixArr) {
@@ -116,16 +150,52 @@ export default class Minecraft extends Model {
         this.updateUniform(this.projectionMatrix);
     }
 
+    setTextureAndShading(status) {
+        this.enableTextureAndShading.value = status;
+        this.updateUniform(this.enableTextureAndShading);
+    }
+
+    setImageTexture(image) {
+        this.bumpTexture = image;
+    }
+
+    initTexture() {
+        const { gl, texture, texNorm, bumpTexture } = this
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+            new Uint8Array([255, 0, 0, 255])); // red
+
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bumpTexture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        texNorm.value = texture;
+    }
+
+    loadTexture() {
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texNorm.value);
+        this.gl.uniform1i(this.texNorm.location, 0);
+    }
+
     updateVars() {
         this.gl.useProgram(this.program);
 
+        this.normalMatrix.value = m4.transpose(m4.inverse(this.modelViewMatrix.value))
+
         this.updateBuffer(this.projectionMatrix);
         this.updateBuffer(this.modelViewMatrix);
+        this.updateBuffer(this.normalMatrix);
+        this.updateBuffer(this.enableTextureAndShading);
 
         this.updateBuffer(this.vPosition);
         this.updateBuffer(this.vColor);
+        this.updateBuffer(this.vIndex);
+        this.updateBuffer(this.vTang);
+        this.updateBuffer(this.vBitang);
+        this.updateBuffer(this.vTexCoord);
 
-        // this.updateBuffer(this.vNormal);
+        this.loadTexture();
     }
     draw(instanceMatrix) {
         const { gl, modelViewMatrix } = this;
@@ -135,7 +205,7 @@ export default class Minecraft extends Model {
         modelViewMatrix.value = instanceMatrix;
         this.updateUniform(modelViewMatrix);
 
-        for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+        for (let i = 0; i < 6; i++) gl.drawElements(gl.TRIANGLES, this.vIndex.value.length, gl.UNSIGNED_SHORT, 0);
 
         modelViewMatrix.value = temp;
     }
@@ -167,7 +237,8 @@ export default class Minecraft extends Model {
     //INIT FUNCTION
 
     initTorso() {
-        let m = m4.rotation(angle.degToRad(this.anglesSet[this.TORSO_ID]['z']), 'z');
+        let m = m4.translation(this.anglesSet[this.TORSO_ID]['tx'], this.anglesSet[this.TORSO_ID]['ty'], this.anglesSet[this.TORSO_ID]['tz'])
+        m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TORSO_ID]['z']), 'z');
         m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TORSO_ID]['y']), 'y');
         m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TORSO_ID]['x']), 'x');
 
@@ -176,7 +247,8 @@ export default class Minecraft extends Model {
                 m,
                 () => this.renderTorso(),
                 null,
-                this.HEAD
+                this.HEAD,
+                true
             );
     }
 
@@ -301,48 +373,61 @@ export default class Minecraft extends Model {
         this.draw(instanceMatrix);
     }
 
-
-    makeQuadSurface(a, b, c, d) {
-        a *= 4; b *= 4; c *= 4; d *= 4;
-
-        this.vPosition.value.push(...this.verticesSet.slice(a, a + 4));
-        this.vPosition.value.push(...this.verticesSet.slice(b, b + 4));
-        this.vPosition.value.push(...this.verticesSet.slice(c, c + 4));
-        this.vPosition.value.push(...this.verticesSet.slice(d, d + 4));
-
-    }
-
     initShape() {
-        this.makeQuadSurface(1, 0, 3, 2);
-        this.vColor.value.push(...this.colorsSet.slice(12, 16));
-        this.vColor.value.push(...this.colorsSet.slice(12, 16));
-        this.vColor.value.push(...this.colorsSet.slice(0, 4));
-        this.vColor.value.push(...this.colorsSet.slice(0, 4));
-        this.makeQuadSurface(2, 3, 7, 6);
-        this.vColor.value.push(...this.colorsSet.slice(12, 16));
-        this.vColor.value.push(...this.colorsSet.slice(12, 16));
-        this.vColor.value.push(...this.colorsSet.slice(0, 4));
-        this.vColor.value.push(...this.colorsSet.slice(0, 4));
-        this.makeQuadSurface(3, 0, 4, 7);
-        this.vColor.value.push(...this.colorsSet.slice(0, 4));
-        this.vColor.value.push(...this.colorsSet.slice(0, 4));
-        this.vColor.value.push(...this.colorsSet.slice(12, 16));
-        this.vColor.value.push(...this.colorsSet.slice(12, 16));
-        this.makeQuadSurface(6, 5, 1, 2);
-        this.vColor.value.push(...this.colorsSet.slice(8, 12));
-        this.vColor.value.push(...this.colorsSet.slice(8, 12));
-        this.vColor.value.push(...this.colorsSet.slice(8, 12));
-        this.vColor.value.push(...this.colorsSet.slice(8, 12));
-        this.makeQuadSurface(4, 5, 6, 7);
-        this.vColor.value.push(...this.colorsSet.slice(4, 8));
-        this.vColor.value.push(...this.colorsSet.slice(4, 8));
-        this.vColor.value.push(...this.colorsSet.slice(4, 8));
-        this.vColor.value.push(...this.colorsSet.slice(4, 8));
-        this.makeQuadSurface(5, 4, 0, 1);
-        this.vColor.value.push(...this.colorsSet.slice(12, 16));
-        this.vColor.value.push(...this.colorsSet.slice(12, 16));
-        this.vColor.value.push(...this.colorsSet.slice(0, 4));
-        this.vColor.value.push(...this.colorsSet.slice(12, 16));
+        this.vPosition.value = [
+            -0.5, -0.5,  0.5,  1,    0.5,  0.5,  0.5,  1,   -0.5,  0.5,  0.5,  1,    0.5, -0.5,  0.5,  1, // Front
+            -0.5, -0.5, -0.5,  1,    0.5,  0.5, -0.5,  1,   -0.5,  0.5, -0.5,  1,    0.5, -0.5, -0.5,  1, // Back
+             0.5, -0.5, -0.5,  1,    0.5,  0.5,  0.5,  1,    0.5, -0.5,  0.5,  1,    0.5,  0.5, -0.5,  1, // Right
+            -0.5, -0.5, -0.5,  1,   -0.5,  0.5,  0.5,  1,   -0.5, -0.5,  0.5,  1,   -0.5,  0.5, -0.5,  1, // Left
+            -0.5,  0.5, -0.5,  1,    0.5,  0.5,  0.5,  1,   -0.5,  0.5,  0.5,  1,    0.5,  0.5, -0.5,  1, // Top
+            -0.5, -0.5, -0.5,  1,    0.5, -0.5,  0.5,  1,   -0.5, -0.5,  0.5,  1,    0.5, -0.5, -0.5,  1, // Bottom
+        ];
+
+        this.vTang.value = [
+            1,  0,  0,    1,  0,  0,    1,  0,  0,    1,  0,  0, // Front
+           -1,  0,  0,   -1,  0,  0,   -1,  0,  0,   -1,  0,  0, // Back
+            0,  0, -1,    0,  0, -1,    0,  0, -1,    0,  0, -1, // Right
+            0,  0,  1,    0,  0,  1,    0,  0,  1,    0,  0,  1, // Left
+            1,  0,  0,    1,  0,  0,    1,  0,  0,    1,  0,  0, // Top
+            1,  0,  0,    1,  0,  0,    1,  0,  0,    1,  0,  0, // Bottom
+        ];
+
+        this.vBitang.value = [
+            0, -1,  0,    0, -1,  0,    0, -1,  0,    0, -1,  0, // Front
+            0, -1,  0,    0, -1,  0,    0, -1,  0,    0, -1,  0, // Back
+            0, -1,  0,    0, -1,  0,    0, -1,  0,    0, -1,  0, // Right
+            0, -1,  0,    0, -1,  0,    0, -1,  0,    0, -1,  0, // Left
+            0,  0,  1,    0,  0,  1,    0,  0,  1,    0,  0,  1, // Top
+            0,  0, -1,    0,  0, -1,    0,  0, -1,    0,  0, -1, // Bot
+        ];
+
+        this.vTexCoord.value = [
+            0,  1,  1,  0,  0,  0,  1,  1, // Front
+            1,  1,  0,  0,  1,  0,  0,  1, // Back
+            1,  1,  0,  0,  0,  1,  1,  0, // Right
+            0,  1,  1,  0,  1,  1,  0,  0, // Left
+            0,  0,  1,  1,  0,  1,  1,  0, // Top
+            0,  1,  1,  0,  0,  0,  1,  1, // Bottom
+        ];
+      
+      
+        this.vIndex.value = [
+            0 , 1 , 2 ,    0 , 3 , 1 , // Front
+            4 , 6 , 5 ,    4 , 5 , 7 , // Back
+            8 , 9 , 10,    8 , 11, 9 , // Right
+            12, 14, 13,    12, 13, 15, // Left
+            16, 18, 17,    16, 17, 19, // Top
+            20, 21, 22,    20, 23, 21, // Bottom
+        ];
+      
+        this.vColor.value = [
+            0.25, 0.14, 0.5, 1,   0.25, 0.14, 0.5, 1,   0.32, 0.17, 0.6, 1,   0.32, 0.17, 0.6, 1, // Front
+            0.25, 0.14, 0.5, 1,   0.25, 0.14, 0.5, 1,   0.32, 0.17, 0.6, 1,   0.32, 0.17, 0.6, 1, // Back
+            0.3 , 0   , 0.7, 1,   0.3 , 0   , 0.7, 1,   0.3 , 0   , 0.7, 1,   0.3 , 0   , 0.7, 1, // Right
+            0.25, 0.14, 0.5, 1,   0.25, 0.14, 0.5, 1,   0.32, 0.17, 0.6, 1,   0.25, 0.14, 0.5, 1, // Left
+            0.32, 0.17, 0.6, 1,   0.32, 0.17, 0.6, 1,   0.25, 0.14, 0.5, 1,   0.25, 0.14, 0.5, 1, // Top
+            0.3 , 0.1 , 0.5, 1,   0.3 , 0.1 , 0.5, 1,   0.3 , 0.1 , 0.5, 1,   0.3 , 0.1 , 0.5, 1, // Bottom
+        ];
     }
 
 }

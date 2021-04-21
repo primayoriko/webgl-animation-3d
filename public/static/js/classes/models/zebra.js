@@ -22,6 +22,13 @@ export default class Zebra extends Model {
       type: "mat4",
     };
 
+    this.viewMatrix = {
+      scope: "uniform",
+      location: gl.getUniformLocation(this.program, "uviewMatrix"),
+      value: m4.new(),
+      type: "mat4",
+    };
+
     this.projectionMatrix = {
       scope: "uniform",
       location: gl.getUniformLocation(this.program, "uProjectionMatrix"),

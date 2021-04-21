@@ -29,7 +29,8 @@ export default class Model {
 
   loadData(data) {
     this.anglesSet = data.anglesSet;
-
+    this.baseTranslation = data.baseTranslation;
+    this.speed = data.speed;
   }
 
   static createNode(transform, render, sibling, child, isRoot=false){

@@ -3,7 +3,7 @@ import Application from "./classes/app.js";
 import Zebra from "./classes/models/zebra.js";
 import Crocodile from "./classes/models/crocodile.js";
 import Minecraft from "./classes/models/minecraft.js";
-import Angle from "./utils/angle-utils.js";
+import angle from "./utils/angle-utils.js";
 
 function main() {
     const { canvas, gl } = init();
@@ -18,18 +18,19 @@ function main() {
     app.addModel(new Crocodile(canvas, gl));
     app.addModel(new Minecraft(canvas, gl));
 
-    app.setCamera("orthographic", [-40.0, 40.0, -23.0, 23.0, -40.0, 40.0]);
-    // let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    // let fov = 130;
-    // let zNear = 1;
-    // let zFar = 5000;
-    // app.setCamera("perspective", [Angle.degToRad(fov), aspect, zNear, zFar]);
+    let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    let fov = 60;
+    let zNear = 1;
+    let zFar = 5000;
+    app.setProjection("perspective", [angle.degToRad(fov), aspect, zNear, zFar]);
 
+    // const len = 40;
+    // const [left, right] = [-len, len];
+    // const [bottom, top] = [-0.55 * len, 0.55 * len];
+    // const near = -300;
+    // const far = 300;
 
-    // app.setCamera("orthographic", [-100.0, 100.0, -80.0, 80.0, -100.0, 100.0]);
-
-    // console.log(app.models[0].modelViewMatrix);
-    // console.log(app.models[0].projectionMatrix);
+    // app.setProjection("orthographic", [left, right, bottom, top, near, far]);
 
     loadEvents(app);
     app.animate();
@@ -62,6 +63,7 @@ function loadEvents(app) {
     const importBtn = document.getElementById('import-btn');
     const uploadBtn = document.getElementById('upload-btn');
     const toggleBtn = document.getElementById('texture-shading-btn');
+    const aniBtn = document.getElementById('animation-btn');
     const cameraAngleSlider = document.getElementById("camera-angle");
     const cameraRadiusSlider = document.getElementById("camera-radius");
 
@@ -69,20 +71,23 @@ function loadEvents(app) {
         if (cameraRadiusSlider.nextElementSibling) {
             cameraRadiusSlider.nextElementSibling.innerHTML = cameraRadiusSlider.value;
         }
-        // app.setCameraRadius(parseFloat(cameraRadiusSlider.value));
+        app.setCameraRadius(parseFloat(cameraRadiusSlider.value));
     };
 
     cameraAngleSlider.oninput = event => {
         if (cameraAngleSlider.nextElementSibling) {
             cameraAngleSlider.nextElementSibling.innerHTML = cameraAngleSlider.value;
         }
-        // app.setCameraAngle(parseFloat(cameraAngleSlider.value));
+        app.setCameraAngle(parseFloat(cameraAngleSlider.value));
     };
 
     toggleBtn.addEventListener('click', event => {
         app.toggleTextureAndShading();
-        console.log("toggle");
+    });
 
+    aniBtn.addEventListener('click', event => {
+        aniBtn.innerHTML = (aniBtn.innerHTML === " Stop Animation ") ? " Start Animation " : " Stop Animation "
+        app.toggleAnimation();
     });
 
     exportBtn.addEventListener('click', event => {
@@ -118,6 +123,16 @@ function loadEvents(app) {
             }
 
             app.loadData(data);
+            // Update UI
+            aniBtn.innerHTML = data.animation ? " Stop Animation " : " Start Animation ";
+            cameraRadiusSlider.value = data.camera.radius;
+            cameraAngleSlider.value = data.camera.angle;
+            if (cameraRadiusSlider.nextElementSibling) {
+                cameraRadiusSlider.nextElementSibling.innerHTML = cameraRadiusSlider.value;
+            }
+            if (cameraAngleSlider.nextElementSibling) {
+                cameraAngleSlider.nextElementSibling.innerHTML = cameraAngleSlider.value;
+            }
 
             alert("data loaded!");
             console.log("data loaded!");
