@@ -1,6 +1,6 @@
 import Model from "./model.js";
 import m4 from "../../utils/m4-utils.js";
-import vector from "../../utils/vector-utils.js";
+import v3 from "../../utils/vec3-utils.js";
 import angle from "../../utils/angle-utils.js";
 import { createProgram } from "../../utils/webgl-utils.js";
 import { defaultVS, crocodileVS } from "../../shaders/vertex.js";
@@ -58,7 +58,7 @@ export default class Crocodile extends Model {
       this.worldCameraPositionLocation = {
         scope: "uniform",
         location: gl.getUniformLocation(this.program, "u_worldCameraPosition"),
-        value: [0,0,0],
+        value: v3.new(),
         type: "vec3",
       };
   
@@ -312,9 +312,6 @@ export default class Crocodile extends Model {
 
       var cameraPosition = [0, 0, 2];
       // gl.uniform3fv(this.worldCameraPositionLocation.location, cameraPosition);
-      this.worldCameraPositionLocation.value.push(0);
-      this.worldCameraPositionLocation.value.push(0);
-      this.worldCameraPositionLocation.value.push(2);
 
 
       var worldMatrix = m4.rotation(this.anglesSet[this.TORSO_ID]* Math.PI / 180, 'x');
@@ -746,6 +743,7 @@ export default class Crocodile extends Model {
     // }
 
     initShape() {
+      this.worldCameraPositionLocation.value = [0,0,2];
       
       this.vNormal.value = [
         0, 0, -1,
