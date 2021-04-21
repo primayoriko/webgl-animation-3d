@@ -1,6 +1,7 @@
 import Model from "./model.js";
 import m4 from "../../utils/m4-utils.js";
 import v3 from "../../utils/vec3-utils.js";
+import vec from "../../utils/vector-utils.js";
 import angle from "../../utils/angle-utils.js";
 import { createProgram } from "../../utils/webgl-utils.js";
 import { defaultVS, crocodileVS } from "../../shaders/vertex.js";
@@ -34,12 +35,12 @@ export default class Crocodile extends Model {
         type: "mat4",
       };
 
-      // this.enableTextureAndShading = {
-      //   scope: "uniform",
-      //   location: gl.getUniformLocation(this.program, "enableTextureAndShading"),
-      //   value: true,
-      //   type: "bool",
-      // };
+      this.enableTextureAndShading = {
+        scope: "uniform",
+        location: gl.getUniformLocation(this.program, "enableTextureAndShading"),
+        value: false,
+        type: "bool",
+      };
 
       this.textureLocation = {
         scope: "uniform",
@@ -70,13 +71,13 @@ export default class Crocodile extends Model {
         size: 3,
       };
   
-      // this.vColor = {
-      //   scope: "attribute",
-      //   location: gl.getAttribLocation(this.program, "aVertexColor"),
-      //   value: [],
-      //   buffer: gl.createBuffer(),
-      //   size: 4,
-      // };
+      this.vColor = {
+        scope: "attribute",
+        location: gl.getAttribLocation(this.program, "aVertexColor"),
+        value: [],
+        buffer: gl.createBuffer(),
+        size: 4,
+      };
 
       this.vNormal = {
         scope: "attribute",
@@ -94,11 +95,11 @@ export default class Crocodile extends Model {
       //   size: 2,
       // };
   
-      // this.vIndex = {
-      //   scope: "index",
-      //   value: [],
-      //   buffer: gl.createBuffer(),
-      // };
+      this.vIndex = {
+        scope: "index",
+        value: [],
+        buffer: gl.createBuffer(),
+      };
 
       
 
@@ -304,13 +305,13 @@ export default class Crocodile extends Model {
       gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
       gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
 
-      var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+      // var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 
-      var _projectionMatrix = m4.perspective(60*Math.PI / 180, aspect, 1, 2000);
-      // gl.uniformMatrix4fv(this.projectionMatrix.location, false, _projectionMatrix);
-      this.projectionMatrix.value = _projectionMatrix;
+      // var _projectionMatrix = m4.perspective(60*Math.PI / 180, aspect, 1, 2000);
+      // // gl.uniformMatrix4fv(this.projectionMatrix.location, false, _projectionMatrix);
+      // this.projectionMatrix.value = _projectionMatrix;
 
-      var cameraPosition = [0, 0, 2];
+      // var cameraPosition = {x:0, y:0, z:0};
       // gl.uniform3fv(this.worldCameraPositionLocation.location, cameraPosition);
 
 
@@ -320,13 +321,13 @@ export default class Crocodile extends Model {
       this.worldLocation.value = worldMatrix;
       
       // var cameraPosition = [0, 0, 2];
-      var target = [0, 0, 0];
-      var up = [0, 1, 0];
+      // var target = {x:0, y:0, z:0};
+      // var up = {x:0, y:1, z:0};
       // Compute the camera's matrix using look at.
-      var cameraMatrix = m4.lookAt(cameraPosition, target, up);
-      var viewMatrix = m4.inverse(cameraMatrix);
+      // var cameraMatrix = vec.lookAt(cameraPosition, target, up);
+      // var viewMatrix = m4.inverse(cameraMatrix);
       // gl.uniformMatrix4fv(this.modelViewMatrix.location, false, viewMatrix);
-      this.modelViewMatrix.value = viewMatrix;
+      // this.modelViewMatrix.value = viewMatrix;
       gl.uniform1i(this.textureLocation.location, 0);
       
     }
@@ -387,9 +388,9 @@ export default class Crocodile extends Model {
 
 
       this.updateBuffer(this.vPosition);
-      // this.updateBuffer(this.vColor);
+      this.updateBuffer(this.vColor);
       this.updateBuffer(this.vNormal);
-      // this.updateBuffer(this.vIndex);
+      this.updateBuffer(this.vIndex);
       // this.updateBuffer(this.vTextureCoord);
   
       this.loadTexture();
@@ -834,7 +835,47 @@ export default class Crocodile extends Model {
         0.5,   0.5, -0.5,
         0.5,   0.5,  0.5,
       ];
+      
+      this.vColor.value = [
+        0.5, 0.25, 0.14, 1,
+        0.5, 0.25, 0.14, 1,
+        0.6, 0.32, 0.17, 1,
+        0.6, 0.32, 0.17, 1,
   
+        0.5, 0.25, 0.14, 1,
+        0.5, 0.25, 0.14, 1,
+        0.6, 0.32, 0.17, 1,
+        0.6, 0.32, 0.17, 1,
+  
+        0.6, 0.32, 0.17, 1,
+        0.6, 0.32, 0.17, 1,
+        0.5, 0.25, 0.14, 1,
+        0.5, 0.25, 0.14, 1,
+  
+        0.5, 0.3, 0.1, 1,
+        0.5, 0.3, 0.1, 1,
+        0.5, 0.3, 0.1, 1,
+        0.5, 0.3, 0.1, 1,
+  
+        0.7, 0.3, 0, 1,
+        0.7, 0.3, 0, 1,
+        0.7, 0.3, 0, 1,
+        0.7, 0.3, 0, 1,
+  
+        0.5, 0.25, 0.14, 1,
+        0.5, 0.25, 0.14, 1,
+        0.6, 0.32, 0.17, 1,
+        0.5, 0.25, 0.14, 1,
+      ];
+
+      this.vIndex.value = [
+        0,  1,  2,      0,  2,  3,    // front
+        4,  5,  6,      4,  6,  7,    // back
+        8,  9,  10,     8,  10, 11,   // top
+        12, 13, 14,     12, 14, 15,   // bottom
+        16, 17, 18,     16, 18, 19,   // right
+        20, 21, 22,     20, 22, 23,   // left
+      ];
       // this.makeQuadSurface(1, 0, 3, 2);
       // this.vColor.value.push(...this.colorsSet.slice(12, 16));
       // this.vColor.value.push(...this.colorsSet.slice(12, 16));

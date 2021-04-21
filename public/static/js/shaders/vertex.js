@@ -52,24 +52,29 @@ void main()
 const crocodileVS = `
 attribute vec4 aVertexPosition;
 attribute vec3 aVertexNormal;
+attribute vec4 aVertexColor;
 
-
-uniform mat4 uModelViewMatrix;
-uniform mat4 uProjectionMatrix;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
 uniform mat4 u_world;
  
 varying vec3 v_worldPosition;
 varying vec3 v_worldNormal;
+varying vec4 fColor;
+
  
 void main() {
   // Multiply the position by the matrix.
-  gl_Position = uProjectionMatrix * uModelViewMatrix * u_world * aVertexPosition;
+  gl_Position = projectionMatrix * modelViewMatrix * aVertexPosition;
  
   // send the view position to the fragment shader
   v_worldPosition = (u_world * aVertexPosition).xyz;
  
   // orient the normals and pass to the fragment shader
   v_worldNormal = mat3(u_world) * aVertexNormal;
+
+  fColor = aVertexColor;
+
 }
 `;
 

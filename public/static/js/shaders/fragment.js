@@ -40,9 +40,13 @@ precision highp float;
 // Passed in from the vertex shader.
 varying vec3 v_worldPosition;
 varying vec3 v_worldNormal;
+varying vec4 fColor;
+
  
 // The texture.
 uniform samplerCube u_texture;
+uniform bool enableTextureAndShading;
+
  
 // The position of the camera
 uniform vec3 u_worldCameraPosition;
@@ -51,8 +55,16 @@ void main() {
   vec3 worldNormal = normalize(v_worldNormal);
   vec3 eyeToSurfaceDir = normalize(v_worldPosition - u_worldCameraPosition);
   vec3 direction = reflect(eyeToSurfaceDir,worldNormal);
+
+  if (!enableTextureAndShading) {
+    // No bump mapping
+    gl_FragColor = fColor;
+  }else{
+    gl_FragColor = textureCube(u_texture, direction);
+  }
+
  
-  gl_FragColor = textureCube(u_texture, direction);
+  
 }
 `;
 
