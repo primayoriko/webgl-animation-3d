@@ -58,7 +58,7 @@ export default class Crocodile extends Model {
       this.worldCameraPositionLocation = {
         scope: "uniform",
         location: gl.getUniformLocation(this.program, "u_worldCameraPosition"),
-        value: [],
+        value: [0,0,0],
         type: "vec3",
       };
   
@@ -304,21 +304,33 @@ export default class Crocodile extends Model {
       gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
       gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
 
-      var _projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, 1, 2000);
-      gl.uniformMatrix4fv(projectionMatrix, false, _projectionMatrix);
+      var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+
+      var _projectionMatrix = m4.perspective(60*Math.PI / 180, aspect, 1, 2000);
+      // gl.uniformMatrix4fv(this.projectionMatrix.location, false, _projectionMatrix);
+      this.projectionMatrix.value = _projectionMatrix;
 
       var cameraPosition = [0, 0, 2];
-      gl.uniform3fv(worldCameraPositionLocation, cameraPosition);
-
+      // gl.uniform3fv(this.worldCameraPositionLocation.location, cameraPosition);
+      this.worldCameraPositionLocation.value.push(0);
+      this.worldCameraPositionLocation.value.push(0);
+      this.worldCameraPositionLocation.value.push(2);
 
 
       var worldMatrix = m4.rotation(this.anglesSet[this.TORSO_ID]* Math.PI / 180, 'x');
       worldMatrix = m4.rotate(worldMatrix,this.anglesSet[this.TORSO_ID]* Math.PI / 180,'y');
-      gl.uniformMatrix4fv(this.worldLocation, false, worldMatrix);
+      // gl.uniformMatrix4fv(this.worldLocation.location, false, worldMatrix);
+      this.worldLocation.value = worldMatrix;
       
-      gl.uniformMatrix4fv(viewLocation, false, viewMatrix);
-    
-      gl.uniform1i(textureLocation, 0);
+      // var cameraPosition = [0, 0, 2];
+      var target = [0, 0, 0];
+      var up = [0, 1, 0];
+      // Compute the camera's matrix using look at.
+      var cameraMatrix = m4.lookAt(cameraPosition, target, up);
+      var viewMatrix = m4.inverse(cameraMatrix);
+      // gl.uniformMatrix4fv(this.modelViewMatrix.location, false, viewMatrix);
+      this.modelViewMatrix.value = viewMatrix;
+      gl.uniform1i(this.textureLocation.location, 0);
       
     }
 
@@ -392,9 +404,20 @@ export default class Crocodile extends Model {
       const temp = modelViewMatrix.value;
   
       modelViewMatrix.value = instanceMatrix;
-      this.updateUniform(modelViewMatrix);
+      this.normalMatrix.value = m4.inverse(instanceMatrix);
   
-      for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+      this.updateUniform(modelViewMatrix);
+      this.updateUniform(this.normalMatrix);
+  
+      const vertexCount = 36;
+      const type = gl.UNSIGNED_SHORT;
+      const offset = 0;
+  
+      gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+      // modelViewMatrix.value = instanceMatrix;
+      // this.updateUniform(modelViewMatrix);
+  
+      // for (let i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
   
       modelViewMatrix.value = temp;
     }

@@ -1,3 +1,5 @@
+import vector from "../utils/vector-utils.js";
+
 const m4 = {
   id: (i, j) => {
     return i * 4 + j;
@@ -289,6 +291,23 @@ const m4 = {
     }
 
     return mat_res;
+  },
+  
+  lookAt: function(cameraPosition, target, up) {
+    var zAxis = vector.normalize(
+      vector.subtract(cameraPosition, target));
+    var xAxis = vector.normalize(vector.multiply(up, zAxis));
+    var yAxis = vector.normalize(vector.multiply(zAxis, xAxis));
+
+    return [
+       xAxis[0], xAxis[1], xAxis[2], 0,
+       yAxis[0], yAxis[1], yAxis[2], 0,
+       zAxis[0], zAxis[1], zAxis[2], 0,
+       cameraPosition[0],
+       cameraPosition[1],
+       cameraPosition[2],
+       1,
+    ];
   }
 }
 
