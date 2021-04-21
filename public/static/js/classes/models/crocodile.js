@@ -343,7 +343,7 @@ export default class Crocodile extends Model {
   
     }
     setCameraPosition(camera){
-      this.worldCameraPositionLocation.value = camera;
+      this.worldCameraPositionLocation.value = [0, 0, 2];
       this.gl.useProgram(this.program);
       this.updateUniform(this.worldCameraPositionLocation);
     }

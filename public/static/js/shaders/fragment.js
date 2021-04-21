@@ -67,7 +67,7 @@ void main() {
     gl_FragColor = fColor;
   }else{
     gl_FragColor = textureCube(u_texture, direction);
-    gl_FragColor.rgb *= (light*albedo + ambient);
+
   }
 }
 `;
