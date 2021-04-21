@@ -62,6 +62,8 @@ varying vec3 v_worldPosition;
 varying vec3 v_worldNormal;
 varying vec4 fColor;
 
+varying vec3 tsLightPos;
+
  
 void main() {
   // Multiply the position by the matrix.
@@ -72,6 +74,10 @@ void main() {
  
   // orient the normals and pass to the fragment shader
   v_worldNormal = mat3(u_world) * aVertexNormal;
+
+  vec3 lightPos = vec3(0.5, 0.7, 1);
+  tsLightPos = lightPos;
+
 
   fColor = aVertexColor;
 

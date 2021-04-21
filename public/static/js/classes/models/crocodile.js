@@ -187,24 +187,6 @@ export default class Crocodile extends Model {
       this.pointsArray = [];
       this.stepParam = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-      this.verticesSet = [
-        -0.5, -0.5, 0.5, 1.0,
-        -0.5, 0.5, 0.5, 1.0,
-        0.5, 0.5, 0.5, 1.0,
-        0.5, -0.5, 0.5, 1.0,
-        -0.5, -0.5, -0.5, 1.0,
-        -0.5, 0.5, -0.5, 1.0,
-        0.5, 0.5, -0.5, 1.0,
-        0.5, -0.5, -0.5, 1.0
-      ];
-
-      this.colorsSet = [
-          0.46, 0.7, 0.8, 1,
-          0.2, 0.3, 0.0, 1.0, 
-          0.2, 0.3, 0.0, 1.0, 
-          0.2, 0.3, 0.0, 1.0 
-        ];
-
       
       this.loadTexture();
       this.init();
@@ -306,27 +288,6 @@ export default class Crocodile extends Model {
 
       gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
       gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-
-      // var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-
-      // var _projectionMatrix = m4.perspective(60*Math.PI / 180, aspect, 1, 2000);
-      // // gl.uniformMatrix4fv(this.projectionMatrix.location, false, _projectionMatrix);
-      // this.projectionMatrix.value = _projectionMatrix;
-
-      // var cameraPosition = {x:0, y:0, z:0};
-      // gl.uniform3fv(this.worldCameraPositionLocation.location, cameraPosition);
-
-
-
-      
-      // var cameraPosition = [0, 0, 2];
-      // var target = {x:0, y:0, z:0};
-      // var up = {x:0, y:1, z:0};
-      // Compute the camera's matrix using look at.
-      // var cameraMatrix = vec.lookAt(cameraPosition, target, up);
-      // var viewMatrix = m4.inverse(cameraMatrix);
-      // gl.uniformMatrix4fv(this.modelViewMatrix.location, false, viewMatrix);
-      // this.modelViewMatrix.value = viewMatrix;
       
     }
 
@@ -439,6 +400,8 @@ export default class Crocodile extends Model {
     initTorso(){
       let m = m4.rotation(angle.degToRad(this.anglesSet[this.GLOBAL_ANGLE_ID]), 'z');
       m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TORSO_ID]), 'y');
+      m = m4.rotate(m, angle.degToRad(this.anglesSet[this.TORSO_ID]), 'x');
+
 
       this.components[this.TORSO_ID] = 
         Model.createNode(
@@ -736,28 +699,6 @@ export default class Crocodile extends Model {
       this.draw(instanceMatrix);
     }
 
-    // makeQuadSurface(a, b, c, d) {
-    //   a *= 4; b *= 4; c *= 4; d *= 4;
-    //   // console.log(this.vPosition.value);
-    //   // let normal = normalize(cross(this.verticesSet.slice(b, b+4)-this.verticesSet.slice(a, a+4) , this.verticesSet.slice(c, c+4)-this.verticesSet.slice(b, b+4) ));
-    //   // this.vNormal.value.push(normal);
-
-
-    //   // var t1 = vector.subtract(this.verticesSet.slice(b, b+4), this.verticesSet.slice(a, a+4));
-    //   // var t2 = vector.subtract(this.verticesSet.slice(c, c+4), this.verticesSet.slice(a, a+4));
-    //   // var normal = vector.multiply(t1, t2);
-    //   // this.vNormal.value.push(normal);
-
-
-  
-    //   this.vPosition.value.push(...this.verticesSet.slice(a, a+4));
-    //   this.vPosition.value.push(...this.verticesSet.slice(b, b+4));
-    //   this.vPosition.value.push(...this.verticesSet.slice(c, c+4));
-    //   this.vPosition.value.push(...this.verticesSet.slice(d, d+4));
-  
-    //   // console.log(this.vPosition.value);
-    // }
-
     initShape() {
       // this.worldCameraPositionLocation.value = [0,0,2];
       
@@ -843,37 +784,38 @@ export default class Crocodile extends Model {
       -0.5, 0.5, 0.5, 1,
       -0.5, 0.5, -0.5, 1,
       ];
-      
+
+
       this.vColor.value = [
-        0.5, 0.25, 0.14, 1,
-        0.5, 0.25, 0.14, 1,
-        0.6, 0.32, 0.17, 1,
-        0.6, 0.32, 0.17, 1,
+        0.13, 0.54, 0.08, 1,
+        0.13, 0.54, 0.08, 1,
+        0.2, 0.3, 0.0, 1.0, 
+        0.2, 0.3, 0.0, 1.0, 
   
-        0.5, 0.25, 0.14, 1,
-        0.5, 0.25, 0.14, 1,
-        0.6, 0.32, 0.17, 1,
-        0.6, 0.32, 0.17, 1,
+        0.13, 0.54, 0.08, 1,
+        0.13, 0.54, 0.08, 1,
+        0.2, 0.3, 0.0, 1.0, 
+        0.2, 0.3, 0.0, 1.0, 
   
-        0.6, 0.32, 0.17, 1,
-        0.6, 0.32, 0.17, 1,
-        0.5, 0.25, 0.14, 1,
-        0.5, 0.25, 0.14, 1,
+        0.2, 0.3, 0.0, 1.0, 
+        0.2, 0.3, 0.0, 1.0, 
+        0.13, 0.54, 0.08, 1,
+        0.13, 0.54, 0.08, 1,
   
-        0.5, 0.3, 0.1, 1,
-        0.5, 0.3, 0.1, 1,
-        0.5, 0.3, 0.1, 1,
-        0.5, 0.3, 0.1, 1,
+        0.2, 0.3, 0.0, 1.0, 
+        0.2, 0.3, 0.0, 1.0, 
+        0.2, 0.3, 0.0, 1.0, 
+        0.2, 0.3, 0.0, 1.0, 
   
-        0.7, 0.3, 0, 1,
-        0.7, 0.3, 0, 1,
-        0.7, 0.3, 0, 1,
-        0.7, 0.3, 0, 1,
+        0.2, 0.3, 0.0, 1.0, 
+        0.2, 0.3, 0.0, 1.0, 
+        0.2, 0.3, 0.0, 1.0, 
+        0.2, 0.3, 0.0, 1.0, 
   
-        0.5, 0.25, 0.14, 1,
-        0.5, 0.25, 0.14, 1,
-        0.6, 0.32, 0.17, 1,
-        0.5, 0.25, 0.14, 1,
+        0.13, 0.54, 0.08, 1,
+        0.13, 0.54, 0.08, 1,
+        0.2, 0.3, 0.0, 1.0, 
+        0.13, 0.54, 0.08, 1,
       ];
 
       this.vIndex.value = [
@@ -884,39 +826,6 @@ export default class Crocodile extends Model {
         16, 17, 18,     16, 18, 19,   // right
         20, 21, 22,     20, 22, 23,   // left
       ];
-
-      // this.makeQuadSurface(1, 0, 3, 2);
-      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      // this.makeQuadSurface(2, 3, 7, 6);
-      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      // this.makeQuadSurface(3, 0, 4, 7);
-      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      // this.makeQuadSurface(6, 5, 1, 2);
-      // this.vColor.value.push(...this.colorsSet.slice(8, 12));
-      // this.vColor.value.push(...this.colorsSet.slice(8, 12));
-      // this.vColor.value.push(...this.colorsSet.slice(8, 12));
-      // this.vColor.value.push(...this.colorsSet.slice(8, 12));
-      // this.makeQuadSurface(4, 5, 6, 7);
-      // this.vColor.value.push(...this.colorsSet.slice(4, 8));
-      // this.vColor.value.push(...this.colorsSet.slice(4, 8));
-      // this.vColor.value.push(...this.colorsSet.slice(4, 8));
-      // this.vColor.value.push(...this.colorsSet.slice(4, 8));
-      // this.makeQuadSurface(5, 4, 0, 1);
-      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
-      // this.vColor.value.push(...this.colorsSet.slice(0, 4));
-      // this.vColor.value.push(...this.colorsSet.slice(12, 16));
-    
-      // this.createTexture();
     }
     
 
