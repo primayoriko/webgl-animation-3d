@@ -10,10 +10,6 @@ function main() {
 
     const app = new Application(canvas, gl);
 
-    // const zebra = new Zebra(canvas, gl, document.getElementById("texImage"));
-
-    // TODO: Inisiasi + tambah model lain
-
     app.addModel(new Zebra(canvas, gl, document.getElementById("texImage")));
     app.addModel(new Crocodile(canvas, gl));
     app.addModel(new Minecraft(canvas, gl));
@@ -23,14 +19,6 @@ function main() {
     let zNear = 1;
     let zFar = 5000;
     app.setProjection("perspective", [angle.degToRad(fov), aspect, zNear, zFar]);
-
-    // const len = 40;
-    // const [left, right] = [-len, len];
-    // const [bottom, top] = [-0.55 * len, 0.55 * len];
-    // const near = -300;
-    // const far = 300;
-
-    // app.setProjection("orthographic", [left, right, bottom, top, near, far]);
 
     loadEvents(app);
     app.animate();
@@ -91,12 +79,12 @@ function loadEvents(app) {
     });
 
     exportBtn.addEventListener('click', event => {
-        var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(app));
-        var downloadWidget = document.getElementById('download-link');
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(app));
+        const downloadWidget = document.getElementById('download-link');
+
         downloadWidget.setAttribute("href", dataStr);
         downloadWidget.setAttribute("download", "data.json");
         downloadWidget.click();
-        // console.log(JSON.stringify(master));
     });
 
     importBtn.addEventListener('click', (e) => {
@@ -140,7 +128,6 @@ function loadEvents(app) {
         });
 
         reader.readAsText(file);
-        // app.render();
     });
 
 }

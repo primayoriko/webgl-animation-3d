@@ -19,8 +19,7 @@ export default class Model {
 
   updateVars() { /* TODO: Impelment as your own model */ }
 
-  // generateNormal() { /* TODO: Impelment as your own model */ }
-  setCameraPosition(camera){}
+  setCameraPosition(camera){ /* TODO: Impelment as your own model */ }
 
   setProjectionMatrix(matrixArr){ /* TODO: Implement as your model */ }
 
@@ -53,8 +52,6 @@ export default class Model {
 
     if (node === null || node === undefined) return;
 
-    // console.log(modelViewMatrix.value);
-
     stack.push(modelViewMatrix.value);
 
     if(node.isRoot){
@@ -64,8 +61,6 @@ export default class Model {
 
     modelViewMatrix.value = 
       m4.multiply(modelViewMatrix.value, node.transform);
-
-    // console.log(modelViewMatrix.value);
 
     node.render();
 

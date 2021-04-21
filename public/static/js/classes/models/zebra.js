@@ -142,43 +142,11 @@ export default class Zebra extends Model {
       backLeg: -6
     }
 
-    // this.texCoord = [
-    //   [0, 0],
-    //   [0, 1],
-    //   [1, 1],
-    //   [1, 0]
-    // ];
-    
-    // this.vertices = [
-    //   [-0.5, -0.5,  0.5, 1.0 ],
-    //   [-0.5,  0.5,  0.5, 1.0 ],
-    //   [0.5,  0.5,  0.5, 1.0 ],
-    //   [0.5, -0.5,  0.5, 1.0 ],
-    //   [-0.5, -0.5, -0.5, 1.0 ],
-    //   [-0.5,  0.5, -0.5, 1.0 ],
-    //   [0.5,  0.5, -0.5, 1.0 ],
-    //   [0.5, -0.5, -0.5, 1.0 ]
-    // ];
-    
-    // this.vertexColors = [
-    //   [0.0, 0.0, 0.0, 1.0 ],  // black
-    //   [1.0, 0.0, 0.0, 1.0 ],  // red
-    //   [1.0, 1.0, 0.0, 1.0 ],  // yellow
-    //   [0.0, 1.0, 0.0, 1.0 ],  // green
-    //   [0.0, 0.0, 1.0, 1.0 ],  // blue
-    //   [1.0, 0.0, 1.0, 1.0 ],  // magenta
-    //   [0.0, 1.0, 1.0, 1.0 ],  // white
-    //   [0.0, 1.0, 1.0, 1.0 ]  // cyan
-    // ];
-
     this.init();
   }
 
   init(){
     this.initBaseShape();
-
-    // this.loadTexture();
-    // this.configureTexture();
 
     this.updateVars();
 
@@ -289,6 +257,7 @@ export default class Zebra extends Model {
 
     function load(){
       const texture = gl.createTexture();
+
       gl.bindTexture( gl.TEXTURE_2D, texture );
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
       gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGB,
@@ -298,12 +267,7 @@ export default class Zebra extends Model {
                         gl.NEAREST_MIPMAP_LINEAR );
       gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
 
-      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
       gl.uniform1i(sampler2D.location, 0);
-      // gl.uniform1i(gl.getUniformLocation(program, "uSampler"), 0);
 
     }
 
@@ -515,37 +479,6 @@ export default class Zebra extends Model {
   }
 
   initBaseShape(){
-    // this.vPosition.value = [
-    //   -0.5, 0.5, 0.5, 1,
-    //   -0.5, -0.5, 0.5, 1,
-    //   0.5, -0.5, 0.5, 1,
-    //   0.5, 0.5, 0.5, 1,
-
-    //   0.5, 0.5, 0.5, 1,
-    //   0.5, -0.5, 0.5, 1,
-    //   0.5, -0.5, -0.5, 1,
-    //   0.5, 0.5, -0.5, 1,
-
-    //   0.5, -0.5, 0.5, 1,
-    //   -0.5, -0.5, 0.5, 1,
-    //   -0.5, -0.5, -0.5, 1,
-    //   0.5, -0.5, -0.5, 1,
-
-    //   0.5, 0.5, -0.5, 1,
-    //   -0.5, 0.5, -0.5, 1,
-    //   -0.5, 0.5, 0.5, 1,
-    //   0.5, 0.5, 0.5, 1,
-
-    //   -0.5, -0.5, -0.5, 1,
-    //   -0.5, 0.5, -0.5, 1,
-    //   0.5, 0.5, -0.5, 1,
-    //   0.5, -0.5, -0.5, 1,
-
-    //   -0.5, 0.5, -0.5, 1,
-    //   -0.5, -0.5, -0.5, 1,
-    //   -0.5, -0.5, 0.5, 1,
-    //   -0.5, 0.5, 0.5, 1
-    // ];
 
     this.vPosition.value = [
       // Front face
@@ -696,45 +629,6 @@ export default class Zebra extends Model {
       0.6, 0.32, 0.17, 1,
       0.5, 0.25, 0.14, 1,
     ];
-
   }
 
-  // quad(a, b, c, d) {
-  //   const { vColor, vPosition, vTextureCoord,
-  //       vertices, vertexColors, texCoord } = this;
-
-  //   vPosition.value.push(...vertices[a]);
-  //   vColor.value.push(...vertexColors[a]);
-  //   vTextureCoord.value.push(...texCoord[0]);
-
-  //   vPosition.value.push(...vertices[b]);
-  //   vColor.value.push(...vertexColors[a]);
-  //   vTextureCoord.value.push(...texCoord[1]);
-
-  //   vPosition.value.push(...vertices[c]);
-  //   vColor.value.push(...vertexColors[a]);
-  //   vTextureCoord.value.push(...texCoord[2]);
-
-  //   vPosition.value.push(...vertices[a]);
-  //   vColor.value.push(...vertexColors[a]);
-  //   vTextureCoord.value.push(...texCoord[0]);
-
-  //   vPosition.value.push(...vertices[c]);
-  //   vColor.value.push(...vertexColors[a]);
-  //   vTextureCoord.value.push(...texCoord[2]);
-
-  //   vPosition.value.push(...vertices[d]);
-  //   vColor.value.push(...vertexColors[a]);
-  //   vTextureCoord.value.push(...texCoord[3]);
-  // }
-
-
-  // initShape(){
-  //   this.quad( 1, 0, 3, 2 );
-  //   this.quad( 2, 3, 7, 6 );
-  //   this.quad( 3, 0, 4, 7 );
-  //   this.quad( 6, 5, 1, 2 );
-  //   this.quad( 4, 5, 6, 7 );
-  //   this.quad( 5, 4, 0, 1 );
-  // }
 }
